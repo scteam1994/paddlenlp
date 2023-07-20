@@ -30,6 +30,8 @@ from paddlenlp.utils.ie_utils import (
 )
 from paddlenlp.utils.log import logger
 
+# tensorboard 可视化
+from visualdl import LogWriter
 
 @dataclass
 class DataArguments:

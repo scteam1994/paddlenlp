@@ -136,7 +136,6 @@ class DocPromptTask(Task):
                 all_key_probs = [1 for _ in all_examples]
 
                 example_index_to_features = collections.defaultdict(list)
-
                 for feature in all_features:
                     example_index_to_features[feature.qas_id].append(feature)
 
@@ -176,7 +175,20 @@ class DocPromptTask(Task):
                         preds = sort_res(example_query, preds, example_doc_tokens, all_boxes[page_id], self._lang)[
                             : self._topn
                         ]
-                    all_predictions.append({"prompt": example_query, "result": preds})
+                        bboxes = []
+                        for pred in preds:
+                            start = pred["start"]
+                            end = pred["end"]
+                            boxes = example.ori_boxes[start:end + 1]
+                            # combine boxes
+                            if len(boxes) > 1:
+                                box_x1 = min([boxes[i][0].left for i in range(len(boxes))])
+                                box_y1 = min([boxes[i][0].top for i in range(len(boxes))])
+                                box_x2 = max([boxes[i][0].right for i in range(len(boxes))])
+                                box_y2 = max([boxes[i][0].bottom for i in range(len(boxes))])
+                            bboxes.append([box_x1, box_y1, box_x2, box_y2])
+
+                    all_predictions.append({"prompt": example_query, "result": preds,"bbox":bboxes})
             all_predictions_list.append(all_predictions)
         return all_predictions_list
 
