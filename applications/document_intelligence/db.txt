@@ -1,0 +1,257 @@
+发票验真信息	verifyMessage	发票验真信息	1
+权利人	obligee	权利人右边的同一行的文字是什么	2
+计划开工日期	plannedStartDate	计划开工日期 开工日期	2
+买方	buyer	需方或甲方或买方	2
+签订日期	signingDate	签订日期	1
+批复时间	approvalTime	批复日期	2
+龙门架	portalFrame	龙门架	2
+民族	nation	民族	1
+出生	birthday	出生	1
+公章数量	seal	公章数量	2
+签字数量	sign	签字数量	2
+工程名称	projectName	工程名称或项目名称	2
+签字数量	sign	签字数量	2
+公章数量	seal	公章数量	2
+姓名	name	姓名	1
+www	wwwss	dsf	1
+按构成分类型	invoiceCompositionType	按构成分类型 construction 建筑安装工程 other_expenses 其他费用 equipment_procurement  设备工器具购置 other 其他	1
+金额（大写）	RMBAmount	大写的金额是多少？	1
+法定代表人	legalRepresentative	法定代表人	1
+销售时间	salesTime	签约日期或签订时间或销售时间是多少或买受人一次性付款的日期是多少或买受人签字的日期是多少	2
+拍摄日期	shootingDate	拍摄日期年月日	2
+企业标识标牌	corporateIdentificationPlate	企业标识标牌	2
+住址	address	住址	1
+公章数量	seal	公章数量	2
+经度	longitude	经度 经纬度的前半部分	2
+名称	name	名称	2
+举办单位	organizer	举办单位	1
+统一社会信用代码	uniScID	统一社会信用代码或事证第	1
+建筑业总产值（千元）	constructionIndustryGrossOutputValue	建筑业总产值或建筑总产值或建筑总产值合计或累计完成产值	2
+交易流水号	serialNo	流水号 凭证号	1
+金额合计（大写）	totalAmount	金额合计（大写）	1
+销售方地址及电话	sellerAddress	图片下方的地址、电话	1
+交款人	payer	交款人或付款人的全称 购买方名称	2
+发票名称	invoiceTypeOrg	票据最顶部中间的内容是什么？	1
+公章数量	seal	公章数量	2
+单位名称	unitName	单位名称或建设单位	2
+计划总投资（万元）	plannedTotalInvestment	计划总投资（万元）是多少或项目总投资（万元）是多少	2
+身份证号码	idcardno	公民身份证号码	1
+工程名称	projectName	工程名称 合同名称	2
+公章数量	seal	公章数量	2
+公章数量	seal	公章数量	2
+卖方	seller	卖方，出卖人	2
+项目建设单位	projectConstructionUnit	项目建设单位	2
+项目建设单位	projectConstructionUnit	项目建设单位或项目法人	2
+公章数量	seal	公章数量	2
+经度	longitude	经度	2
+名称	name	名称	2
+收款账户户名	payee	第二个收款人名称 第二个收款人户名或转入方的户名或	2
+住所	domicile	住所	1
+施工单位名称	constructionUnitName	施工单位名称	1
+购买方地址及电话	purchaserAddress	图片上方的地址、电话	1
+住所	domicile	住所	1
+项目名称	projectName	项目名称是什么？	2
+购买方名称	purchaserName	图片上方购买方的称 第一个纳税人识别号旁边的名称是什么？	2
+计划竣工日期	plannedCompletionDate	计划峻工日期或峻工日期或竣工日期或计划竣工日期	2
+开票日期	invoiceDate	开票日期	2
+项目名称	projectName	项目名称	2
+公章数量	seal	公章数量	2
+纬度	latitude	纬度	2
+拍摄时间	shootingTime	拍摄时间或时间并格式化	2
+计划投资额（万元）	plannedInvestment	计划投资额（万元） 计划总投资（万元）	2
+现场核验人员签字	onsiteAuditorSigned	现场核验人员签字 现场核验人员签名	2
+现场核验主管部门盖章	onsiteCompetentStamped	现场核验主管部门盖章	2
+机构名称	organizationName	机构名称	2
+建设单位	responsibilityConstruction	建设单位	2
+工程名称	projectName	工程名称	2
+用地单位	landUser	用地单位	2
+发证机关	licenceIssuingAuthority	发证机关	1
+企业标识标牌	corporateIdentificationPlate	企业标识标牌	2
+设备铭牌（设备品牌、型号等）	equipmentNameplate	设备铭牌（设备品牌、型号等）	2
+开票日期	invoiceDate	开票日期或填制日期或标题下方的日期是什么	2
+合同金额（元）	contractAmount	合同总价 合同合计 签约合同价	2
+工程款支付方式	projectPaymentMethod	工程款支付方式或付款方式	2
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+工程规模（万元）	projectScale	工程规模（万元） 合同金额 总投资金额	1
+备案时间	filingTime	备案时间	1
+发包人名称	employerName	发包人名称，发包人（全称）或建设单位或甲方或发包方	2
+纬度	latitude	纬度 经纬度的后半部分	2
+批准用地机关	approvalAuthorityLandUse	批准用地机关或发证机关后面的文字	1
+统计周期	statisticalPeriod	期间是多少或会计期间是多少或日期是多少或月份是多少	2
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否PS	isPs	isPs	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+付款账户户名	payer	付款人的户名或最左边的户名是什么或第一个全称是什么 转出方的户名全称 付款账户的户名	2
+统计周期	statisticalPeriod	标题中的日期或统计周期中的年月	2
+详细内容	word	详细内容	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+销售方名称	sellerName	图片下方销售方的名称	2
+详细内容（项目编码+项目名称+单位+数量+标准+金额+备注）	detailContent	项目编码或项目名称	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+人员	person	人员	1
+月度进度款（万元）	monthlyProgressPayment	本月完成金额 本期完成	1
+统计周期	statisticalPeriod	日期截取年份 标题的年月季度是什么 标题中的日期 两个连续的日期 最左变的标题为签约日期那一竖列中的年份	2
+本年完成产值（万元）	yearCompletedOutputValue	本年完成产值（万元） 本年完成	2
+是否ps	isPs	是否ps	1
+登记机关	registrationAuthority	登记机关或红色的字体	1
+是否ps	isPs	是否ps	1
+是否ps	isPs	是否ps	1
+工程名称	projectName	工程名称或项目名称 工程名称右边是什么	2
+宗旨和业务范围	aimsBusinessScope	宗旨和业务范围	1
+公章数量	seal	公章数量	2
+拍摄地址	shootingAddress	拍摄地址或地址或拍摄地点	1
+编号	number	编号	1
+开工时间	startTime	开工时间或项目开工日期或开工日期或备注里的开工日期	1
+其他费用（b112）	other_expenses	其他费用（b112） 	1
+发票验真结果	verifyResult	结果为：0001：查验成功发票一致，0002：发票信息不一致，0003：未能识别出该发票二维码	1
+核准日期	approvalDate	核准日期或登记机关的附近的年月日	1
+登记号	registrationNo	登记号	1
+计划总投资（万元）	plannedTotalInvestment	计划总投资（万元），总投资，项目总投资，项目建设总投资估算约为	2
+项目名称	projectName	项目名称	2
+统计周期	statisticalPeriod	标题的年月是什么	2
+公章数量	seal	公章数量	2
+销售面积合计（㎡）	totalSalesArea	面积的合计 销售面积合计（㎡） 成交面积的合计 成交面积 面积的合计 建筑面积的合计 面积 建筑面积（㎡）的合计	2
+上年结转合同额（千元）	lastYearContractAmount	上年结转合同额（千元）	1
+项目数量	itemsNumber	项目数量	1
+发证日期	issueDate	发证日期	1
+项目正式开工时间	projectOfficialStartTime	项目正式开工时间	1
+设计单位	design	设计单位	1
+本年贷方累计（合计）	yearCreditAccumulated	累计发生的贷方所在列的合计或贷方累计	1
+签订合同额（千元）	contractAmoun	签订合同额（千元） 签订合同额 预算合计	1
+签字数量	sign	签字数量	1
+建设地点	constructionSite	建设地点 建设地址	1
+校验码	checkCode	校验码	1
+用地面积	landArea	用地面积	1
+用途	use	用途	1
+发证机关	licenceIssuingAuthority	发证机关	1
+共有情况	commonSituation	共有情况	1
+权利性质	natureRights	权利性质	1
+使用期限	limitedTime	使用期限	1
+施工单位	building	施工单位	1
+注册资本	registeredCapital	注册资本	1
+有效期	periodValidity	有效期	1
+成立日期	establishmentDate	成立日期	1
+经费来源	sourceFunding	经费来源	1
+开办资金	InitialFunds	开办资金	1
+货物或应税劳务、服务名称	commodityName	货物或应税劳务、服务名称或项目名称所在列的所有内容是什么？	1
+性别	gender	性别	1
+建设地点	constructionSite	建设地点或建设地址	1
+统计周期	statisticalPeriod	标题的年份多少或统计周期是多少？ 标题中的日期是什么？	2
+卖方	seller	供方 乙方或卖方	1
+本期贷方发生额（合计）	currentCreditAmount	本期发生贷方的所在列的合计或本期贷方发生额（合计）	1
+本年新签合同额（千元）	thisYearNewContractsAmount	本年新签合同额（千元） 自年初累计完成产值的合计	1
+期末借方余额（合计）	endDebitBalance	期末余额的借方的合计或期末借方余额合计	1
+合同金额	contractAmount	合计 合同金额 总价合计	1
+本年借方累计（合计）	yearDebitAccumulated	累计发生的借方所在列的合计或借方累计	1
+签字数量	sign	签字数量	1
+项目名称	projectName	项目名称	1
+工程总承包单位	generalContractingRepresentativeConstructionCompany	工程总承包单位	1
+项目编码	itemCoding	项目编码	1
+承包人名称	contractorName	承包人名称，承包人（全称）或承包单位或乙方	1
+勘察单位	exploration	勘察单位	1
+单位名称	projectName	工程名称 单位名称 施工单位 填报单位	1
+拍摄地址	shootingAddress	拍摄地址 拍摄地点 地址	1
+土地用途	landUse	土地用途	1
+用地位置	landLocation	用地位置	1
+建设规模	constructionScale	建设规模	1
+坐落	beLocated	坐落	1
+地字	groundCharacter	地字地后面的数字	1
+权利类型	typesRights	权利类型	1
+不动产单元号	realEstateUnitNumber	不动产单元号	1
+合同价格	contractPrice	合同价格	1
+单位名称	unitName	单位名称或编制单位是什么 标题的单位名称是什么 标题的项目名称是什么	1
+法定代表人	legalRepresentative	法定代表人	1
+类型	type	类型	1
+营业期限	businessTimeLimit	营业期限	1
+统一社会信用代码	uniScID	统一社会信用代码的18个字符是什么	1
+项目代码	projectCode	项目代码 发改投资备	1
+销售总价款	grossSalesProceeds	销售总价款或总金额或一次性付款金额或按照建筑面积计算的总价款	1
+票据代码	billCode	票据代码 No后面的数字是什么	1
+交款人统一社会信用代码	payerUniScID	交款人统一社会信用代码或纳税人识别号	1
+币种	currency	币种 币别	1
+机构类型	organizationType	机构类型或机构性质	1
+法定代表人	legalRepresentative	法定代表人或负责人	1
+地址	address	地址或机构地址	1
+有效期	periodValidity	有效期或颁发日期	1
+监理单位	supervision	监理单位	1
+项目名称	projectName	项目名称	1
+项目名称	projectName	单位或工程名称或项目名称	1
+销售数量（套）	quantitySold	销售数量（套） 套数 序号的最大值是什么 序号的最后一个是什么 序	1
+期初贷方余额（合计）	beginCreditBalance	期初贷方余额的合计或期初余额贷方的合计或期初贷方余额（合计）	1
+主要施工单位	mainConstructionUnit	主要施工单位 主要施工单位名称	1
+项目相册与申报材料是否一致	projectAlbumApplicationMaterialsIsConsistent	项目相册与申报材料是否一致 项目现场与申报材料是否一致	1
+期初借方余额（合计）	beginDebitBalance	期初余额借方所在列的合计或期初借方余额所在列的合计或期初借方余额（合计）	1
+工程规模（万元）	projectScale	工程规模（万元）	1
+签订日期	signingDate	签订日期 签订时间	1
+项目详细建设地址	projectDetailConstructionAddress	项目详细建设地址 项目详细地址	1
+本月工程合价（元）	totalProjectPriceThisMonth	本月工程合价（万元）的合计或金额（万元）的合价或金额（元）的合计或综合合价或本期完成的合价	1
+批准用地文号	approvedLandUseDocumentNumber	批准用地文号	1
+土地取得方式	landAcquisitionMethod	土地取得方式	1
+项目名称	projectName	项目名称或用地项目名称	1
+建设规模	constructionScale	建设规模	1
+面积	area	面积后面的数字是多少	1
+合同工期	contractDuration	合同工期	1
+买方	buyer	买方，买受人，买受人(1)	1
+销售面积	salesArea	建筑面积，合同约定的建筑面积，建筑面积共	1
+购买方开户行及账号	purchaserBank	购买方开户行及账号	1
+票据号码	billNumber	票据号码或右上角票据号码是多少	1
+建设地点	constructLocations	建设地点	1
+备案部门	filingDepartment	备案部门	1
+金额（小写）	amount	小写金额数字是多少？或交易金额小写内容	1
+签字数量	sign	签字数量	2
+累计完成产值（万元）	totalCompletedOutputValue	累计完成产值（万元） 项目累计	1
+登记机关	registrationAuthority	登记机关或登记管理机关	1
+颁发单位	Issued	赋码机关或颁发单位	1
+是否重大制造业及集中开工项目	whetherMajorManufacturingAndConcentratedProjects	是否重大制造业及集中开工项目	1
+代码	code	代码或统一社会信用代码	1
+金额合计（小写）	lowerTotalAmount	合计金额小写 小写后面的数字 小写数字	1
+购买方纳税人识别号	purchaserRegisterNum	购买方纳税人识别号	1
+期末贷方余额（合计）	endCreditBalance	期末余额的贷方的合计或期末贷方余额合计	1
+设备工器具购置（b110）	equipment_procurement	设备工器具购置（b110）	1
+建筑安装工程（b108+b109）	construction	建筑安装工程（b108+b109）	1
+本期借方发生额（合计）	currentDebitAmount	本期发生借方的合计或本期借方发生额（合计）或本期借方发生的合计	1
+本年工程累计合价（元）	accumulatedTotalPriceThisYearProject	本年工程累计合价（元）或金额（元）的累计合价或累计的合价	1
+批准用地机关	landUseApprovingAuthority	批准用地机关	1
+其他	other	其他	1
+本年完成投资（b107）	total	本年完成投资（b107）	1
+工期	duration	工期 竣工工期 总工期 工期总日历天 工期总日历天数后边的天数	1
+合同金额合计（元）	totalContractAmount	总价 合同金额合计（元） 认购总价 合同总价 合同成交总价 认购金额 认购金额的合计 签约总价的合计 总价款的合计 总价的合计 销售合同的合计 合同成交总价的合计 合同成交总价（元）的合计	1
+发票号码	invoiceNum	发票号码的数字是多少？ No右面的数字是什么？	1
+合计金额	totalAmount	金额当前列的合计是多少？	1
+发票代码	invoiceCode	代码 图片左上方的数字	1
+项目单位名称	projectUnitName	项目公司名称或项目单位名称或建设单位名称	1
+公章数量	seal	公章数量	1
+不动产权号	realEstateNumber	不动产权号第	1
+付款行	bankName	付款账户旁边的付款银行 付款人旁边的开户行	1
+公章数量	seal	公章数量	1
+签字数量	sign	签字数量	1
+销售方纳税人识别号	sellerRegisterNum	销售方纳税人识别号	1
+销售方开户行及账号	sellerBank	销售方开户行及账号	1
+合计税额	totalTax	税额当前列的合计是多少？	1
+机器编号	machineCode	机器编号是多少	1
+开票人	noteDrawer	开票人	1
+复核人	checker	复核人	1
+交易日期	date	交易日期或交易时间或财务日期 	1
+收款人	payee	收款人	1
+付款账户账号	payAccount	第一个账号 付款人的账号 出票人的账号 付款账户的账号	1
+收款账户账号	payeeAccount	转入方的账号或收款人旁边的账号或第二个账号 收款人旁边的账号或后面的个账号内容	1
+价税合计（小写）	amountInFiguers	价税合计的（小写）的数字	1
+价税合计(大写)	amountInWords	价税合计（大写）	1
+收款单位（章）	collectionUnit	收款单位全称或收款单位（章）：的内容是什么 收款人的名称	1
+经营范围	businessScope	经营范围	1
+收款行	payeeBank	收款人旁边的开户银行或第二个开户银行 转入方的收款银行名称 收款人的开户银行	1

@@ -1903,6 +1903,8 @@ class Trainer:
             metric_key_prefix=metric_key_prefix,
             max_eval_iters=self.args.max_evaluate_steps,
         )
+        # output
+        # eval_dataset
 
         total_batch_size = self.args.eval_batch_size * self.args.dataset_world_size
         output.metrics.update(
