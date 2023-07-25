@@ -30,8 +30,6 @@ from paddlenlp.utils.ie_utils import (
 )
 from paddlenlp.utils.log import logger
 
-# tensorboard 可视化
-from visualdl import LogWriter
 
 @dataclass
 class DataArguments:
@@ -56,7 +54,7 @@ class DataArguments:
     )
 
     debug: bool = field(
-        default=False,
+        default=True,
         metadata={"help": "Whether choose debug mode."},
     )
 
@@ -112,14 +110,15 @@ def do_eval():
         tokenizer=tokenizer,
         compute_metrics=compute_metrics,
     )
-    eval_metrics = trainer.evaluate()
-    logger.info("-----Evaluate model-------")
-    logger.info("Class Name: ALL CLASSES")
-    logger.info(
-        "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-        % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
-    )
-    logger.info("-----------------------------")
+    # eval_metrics = trainer.evaluate()
+    # logger.info("-----Evaluate model-------")
+    # logger.info("Class Name: ALL CLASSES")
+    # logger.info(
+    #     "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+    #     % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
+    # )
+    # logger.info("-----------------------------")
+
     if data_args.debug:
         for key in class_dict.keys():
             test_ds = MapDataset(class_dict[key])
@@ -132,19 +131,6 @@ def do_eval():
                 % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
             )
             logger.info("-----------------------------")
-        for key in relation_type_dict.keys():
-            test_ds = MapDataset(relation_type_dict[key])
-            test_ds = test_ds.map(trans_fn)
-            eval_metrics = trainer.evaluate(eval_dataset=test_ds)
-            logger.info("-----------------------------")
-            if data_args.schema_lang == "ch":
-                logger.info("Class Name: X的%s" % key)
-            else:
-                logger.info("Class Name: %s of X" % key)
-            logger.info(
-                "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-                % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
-            )
 
 
 if __name__ == "__main__":

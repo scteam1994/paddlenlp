@@ -158,19 +158,19 @@ class TermTreeNode(object):
     """
 
     def __init__(
-            self,
-            sid: str,
-            term: str,
-            base: str,
-            node_type: str = "term",
-            term_type: Optional[str] = None,
-            hyper: Optional[str] = None,
-            level: Optional[int] = None,
-            alias: Optional[List[str]] = None,
-            alias_ext: Optional[List[str]] = None,
-            sub_type: Optional[List[str]] = None,
-            sub_term: Optional[List[str]] = None,
-            data: Optional[Dict[str, Any]] = None,
+        self,
+        sid: str,
+        term: str,
+        base: str,
+        node_type: str = "term",
+        term_type: Optional[str] = None,
+        hyper: Optional[str] = None,
+        level: Optional[int] = None,
+        alias: Optional[List[str]] = None,
+        alias_ext: Optional[List[str]] = None,
+        sub_type: Optional[List[str]] = None,
+        sub_term: Optional[List[str]] = None,
+        data: Optional[Dict[str, Any]] = None,
     ):
         self._sid = sid
         self._term = term
@@ -334,15 +334,15 @@ class TermTree(object):
             warnings.warn(f"{node.sid} exists, will be replaced by new node.")
 
     def add_term(
-            self,
-            term: Optional[str] = None,
-            base: Optional[str] = None,
-            term_type: Optional[str] = None,
-            sub_type: Optional[List[str]] = None,
-            sub_term: Optional[List[str]] = None,
-            alias: Optional[List[str]] = None,
-            alias_ext: Optional[List[str]] = None,
-            data: Optional[Dict[str, Any]] = None,
+        self,
+        term: Optional[str] = None,
+        base: Optional[str] = None,
+        term_type: Optional[str] = None,
+        sub_type: Optional[List[str]] = None,
+        sub_term: Optional[List[str]] = None,
+        alias: Optional[List[str]] = None,
+        alias_ext: Optional[List[str]] = None,
+        data: Optional[Dict[str, Any]] = None,
     ):
         """Add a term into TermTree.
 
@@ -710,7 +710,7 @@ class Customization(object):
                         tags.append("")
                     else:
                         phrase += word[: word.rfind("/")]
-                        tags.append(word[word.rfind("/") + 1:])
+                        tags.append(word[word.rfind("/") + 1 :])
                     offset.append(len(phrase))
 
                 if len(phrase) < 2 and tags[0] == "":
@@ -1170,8 +1170,8 @@ class WordTagRelationExtractor(object):
 
                     # Reverse triple if group has relative.
                     if (
-                            group_name in head_conf.get("rel_group", {})
-                            or head_conf["trigger"][cur_item["item"]]["rev_flag"] is True
+                        group_name in head_conf.get("rel_group", {})
+                        or head_conf["trigger"][cur_item["item"]]["rev_flag"] is True
                     ):
                         rev_tmp = self._reverse(tmp, head_conf.get("rel_group", {}).get(group_name, None))
                         res_cand.extend(rev_tmp[:])
@@ -1226,8 +1226,8 @@ class WordTagRelationExtractor(object):
                             )
 
                             if (
-                                    group_name in head_conf.get("rel_group", {})
-                                    or head_conf["trigger"][cur_item["item"]]["rev_flag"] is True
+                                group_name in head_conf.get("rel_group", {})
+                                or head_conf["trigger"][cur_item["item"]]["rev_flag"] is True
                             ):
                                 rev_tmp = self._reverse(tmp, head_conf.get("rel_group", {}).get(group_name, None))
                                 res_cand.extend(rev_tmp[:])
@@ -1251,7 +1251,7 @@ class WordTagRelationExtractor(object):
                                 cur_pos=0,
                                 jux_type=tail_conf["main"],
                                 status_flag=True,
-                                search_list=self._all_items[i + 1: tail_idx][::-1],
+                                search_list=self._all_items[i + 1 : tail_idx][::-1],
                             )
                             tail_cand = self._jux_buf[:]
                             supports = self._find_supp(range(g_idx - 1, last_end, -1), tail_conf["support"])
@@ -1267,8 +1267,8 @@ class WordTagRelationExtractor(object):
                             )
 
                             if (
-                                    group_name in head_conf.get("rel_group", {})
-                                    or head_conf["trigger"][cur_item["item"]]["rev_flag"] is True
+                                group_name in head_conf.get("rel_group", {})
+                                or head_conf["trigger"][cur_item["item"]]["rev_flag"] is True
                             ):
                                 rev_tmp = self._reverse(tmp, head_conf.get("rel_group", {}).get(group_name, None))
                                 res_cand.extend(rev_tmp[:])
@@ -1343,11 +1343,11 @@ def gp_decode(batch_outputs, offset_mappings, texts, label_maps, task_type="rela
         batch_ent_results = []
         batch_rel_results = []
         for entity_output, head_output, tail_output, offset_mapping, text in zip(
-                batch_outputs[0].numpy(),
-                batch_outputs[1].numpy(),
-                batch_outputs[2].numpy(),
-                offset_mappings,
-                texts,
+            batch_outputs[0].numpy(),
+            batch_outputs[1].numpy(),
+            batch_outputs[2].numpy(),
+            offset_mappings,
+            texts,
         ):
             entity_output[:, [0, -1]] -= np.inf
             entity_output[:, :, [0, -1]] -= np.inf
@@ -1380,18 +1380,18 @@ def gp_decode(batch_outputs, offset_mappings, texts, label_maps, task_type="rela
                         rel_prob = head_probs[p, sh, oh] * tail_probs[p, st, ot]
                         if task_type == "relation_extraction":
                             rel = {
-                                "subject": text[offset_mapping[sh][0]: offset_mapping[st][1]],
+                                "subject": text[offset_mapping[sh][0] : offset_mapping[st][1]],
                                 "predicate": label_maps["id2relation"][str(p)],
-                                "object": text[offset_mapping[oh][0]: offset_mapping[ot][1]],
+                                "object": text[offset_mapping[oh][0] : offset_mapping[ot][1]],
                                 "subject_start_index": offset_mapping[sh][0],
                                 "object_start_index": offset_mapping[oh][0],
                                 "probability": rel_prob,
                             }
                         else:
                             rel = {
-                                "aspect": text[offset_mapping[sh][0]: offset_mapping[st][1]],
+                                "aspect": text[offset_mapping[sh][0] : offset_mapping[st][1]],
                                 "sentiment": label_maps["id2relation"][str(p)],
-                                "opinion": text[offset_mapping[oh][0]: offset_mapping[ot][1]],
+                                "opinion": text[offset_mapping[oh][0] : offset_mapping[ot][1]],
                                 "aspect_start_index": offset_mapping[sh][0],
                                 "opinion_start_index": offset_mapping[oh][0],
                                 "probability": rel_prob,
@@ -1566,25 +1566,25 @@ class ProcessReader(object):
     """
 
     def __init__(
-            self,
-            dataset=None,
-            sample_transforms=None,
-            batch_transforms=None,
-            batch_size=None,
-            shuffle=False,
-            drop_last=False,
-            drop_empty=True,
-            mixup_epoch=-1,
-            cutmix_epoch=-1,
-            class_aware_sampling=False,
-            use_process=False,
-            use_fine_grained_loss=False,
-            num_classes=80,
-            bufsize=-1,
-            memsize="3G",
-            inputs_def=None,
-            devices_num=1,
-            num_trainers=1,
+        self,
+        dataset=None,
+        sample_transforms=None,
+        batch_transforms=None,
+        batch_size=None,
+        shuffle=False,
+        drop_last=False,
+        drop_empty=True,
+        mixup_epoch=-1,
+        cutmix_epoch=-1,
+        class_aware_sampling=False,
+        use_process=False,
+        use_fine_grained_loss=False,
+        num_classes=80,
+        bufsize=-1,
+        memsize="3G",
+        inputs_def=None,
+        devices_num=1,
+        num_trainers=1,
     ):
         """"""
         self._fields = copy.deepcopy(inputs_def["fields"]) if inputs_def else None
@@ -1641,18 +1641,18 @@ class ProcessReader(object):
 
 
 def pad_batch_data(
-        insts,
-        pad_idx=0,
-        max_seq_len=None,
-        return_pos=False,
-        return_input_mask=False,
-        return_max_len=False,
-        return_num_token=False,
-        return_seq_lens=False,
-        pad_2d_pos_ids=False,
-        pad_segment_id=False,
-        select=False,
-        extract=False,
+    insts,
+    pad_idx=0,
+    max_seq_len=None,
+    return_pos=False,
+    return_input_mask=False,
+    return_max_len=False,
+    return_num_token=False,
+    return_seq_lens=False,
+    pad_2d_pos_ids=False,
+    pad_segment_id=False,
+    select=False,
+    extract=False,
 ):
     """
     Pad the instances to the max sequence length in batch, and generate the
@@ -1700,15 +1700,15 @@ def pad_batch_data(
 
 class ImageReader(object):
     def __init__(
-            self,
-            super_rel_pos,
-            tokenizer,
-            max_key_len=16,
-            max_seq_len=512,
-            image_size=1024,
-            block_w=7,
-            block_h=7,
-            im_npos=224,
+        self,
+        super_rel_pos,
+        tokenizer,
+        max_key_len=16,
+        max_seq_len=512,
+        image_size=1024,
+        block_w=7,
+        block_h=7,
+        im_npos=224,
     ):
         self.tokenizer = tokenizer
         self.vocab = self.tokenizer.get_vocab()
@@ -1957,7 +1957,7 @@ class ImageReader(object):
         query_tokens = tokenizer.tokenize("&" + str(example.keys[0]))[1:][: self.max_key_len]
 
         for i, (token_list, box_list, seg_list, l) in enumerate(
-                zip(example.doc_tokens, example.boxes, example.segment_ids, example.seq_labels)
+            zip(example.doc_tokens, example.boxes, example.segment_ids, example.seq_labels)
         ):
             assert len(token_list) == len(box_list) == len(seg_list)
             for idt, (token, box, seg) in enumerate(zip(token_list, box_list, seg_list)):
@@ -2182,12 +2182,12 @@ class ImageReader(object):
         return rel_pos
 
     def generate_coco_data(
-            self,
-            batch_image_path,
-            batch_image_base64,
-            batch_scaled_width,
-            batch_scaled_height,
-            batch_rois,
+        self,
+        batch_image_path,
+        batch_image_base64,
+        batch_scaled_width,
+        batch_scaled_height,
+        batch_rois,
     ):
         """generator coco data"""
 
@@ -2209,11 +2209,11 @@ class ImageReader(object):
 
         result = []
         for image_path, im_base64, width, height, roi in zip(
-                batch_image_path,
-                batch_image_base64,
-                batch_scaled_width,
-                batch_scaled_height,
-                batch_rois,
+            batch_image_path,
+            batch_image_base64,
+            batch_scaled_width,
+            batch_scaled_height,
+            batch_rois,
         ):
             result.append((image_path, 0, height, width, roi, None, im_base64))
         return transform(result)
@@ -2301,7 +2301,7 @@ def get_doc_pred(result, ans_pos, example, tokenizer, feature, do_lower_case, al
     preds = []
     for start_index, end_index in ans_pos:
         # process data
-        tok_tokens = feature.tokens[start_index: end_index + 1]
+        tok_tokens = feature.tokens[start_index : end_index + 1]
         tok_text = " ".join(tok_tokens)
         # De-tokenize WordPieces that have been split off.
         tok_text = tok_text.replace(" ##", "")
@@ -2311,14 +2311,14 @@ def get_doc_pred(result, ans_pos, example, tokenizer, feature, do_lower_case, al
 
         orig_doc_start = feature.token_to_orig_map[start_index]
         orig_doc_end = feature.token_to_orig_map[end_index]
-        orig_tokens = example.doc_tokens[orig_doc_start: orig_doc_end + 1]
+        orig_tokens = example.doc_tokens[orig_doc_start : orig_doc_end + 1]
 
         # Clean whitespace
         orig_text = "".join(["".join(x) for x in orig_tokens])
         final_text = get_final_text(tok_text, orig_text, tokenizer, do_lower_case)
 
         probs = []
-        for idx, logit in enumerate(result.seq_logits[start_index: end_index + 1]):
+        for idx, logit in enumerate(result.seq_logits[start_index : end_index + 1]):
             if idx == 0:
                 # -1 is for B in  OIB or I in OI
                 probs.append(_compute_softmax(logit)[-1])
@@ -2381,7 +2381,7 @@ def get_final_text(pred_text, orig_text, tokenizer, do_lower_case):
     if orig_end_position is None:
         return orig_text
 
-    output_text = orig_text[orig_start_position: (orig_end_position + 1)]
+    output_text = orig_text[orig_start_position : (orig_end_position + 1)]
     return output_text
 
 
@@ -2416,40 +2416,7 @@ def find_bio_pos(label):
     return cand_ans
 
 
-def soft_max(logits):
-    bottom = np.sum(np.exp(logits), axis=1)
-    return np.exp(logits) / np.array((bottom, bottom, bottom)).T
-
-
-def viterbi_decode(logits, coeff=None):
-    if coeff is None:
-        coefficient = np.array([0.5, 1, 1])
-
-    prob = soft_max(logits)  # shape: L * D
-    np_logits = prob / np.mean(prob, axis=0)
-    length, dim = np_logits.shape
-    f = np.zeros(np_logits.shape)
-    path = [["" for i in range(dim)] for j in range(length)]
-    label_scheme = "OIB"
-    # oib label 0:O, 1:I, 2:B
-    # illegal matrix: [O, I ,B, start, end] * [O, I, B, start, end]
-    illegal = np.array([[0, -1, 0, -1, 0], [0, 0, 0, -1, 0], [0, 0, 0, 0, 0], [0, -1, 0, 0, 0], [-1, -1, -1, -1, -1]])
-    illegal = illegal * 1000
-
-    f[0, :] = np_logits[0, :] + illegal[3, :3]
-    path[0] = [label_scheme[i] for i in range(dim)]
-
-    for step in range(1, length):
-        last_s = f[step - 1, :]
-        for d in range(dim):
-            cand_score = illegal[:3, d] + last_s + np_logits[step, d]
-            f[step, d] = np.max(cand_score)
-            path[step][d] = path[step - 1][np.argmax(cand_score)] + label_scheme[d]
-    final_path = path[-1][np.argmax(f[-1, :])]
-    return final_path, prob
-
-
-def viterbi_decode_ori(logits):
+def viterbi_decode(logits):
     np_logits = np.array(logits)  # shape: L * D
     length, dim = np_logits.shape
     f = np.zeros(np_logits.shape)
@@ -2479,8 +2446,7 @@ def find_answer_pos(logits, feature):
     ans = []
     cand_ans = []
 
-    best_path, prob = viterbi_decode(logits)
-    best_path = best_path.replace('IBI', 'III')
+    best_path = viterbi_decode(logits)
     cand_ans = find_bio_pos(best_path)
 
     for start_index, end_index in cand_ans:
@@ -2496,12 +2462,7 @@ def find_answer_pos(logits, feature):
         if is_valid:
             ans.append([start_index, end_index])
 
-    P = []
-    for a in ans:
-        P.append(np.mean(np.max(prob, axis=1)[a[0]:a[1]+1]))
-
-
-    return ans, P
+    return ans
 
 
 def calEuclidean(x_list, y_list):

@@ -136,6 +136,7 @@ class DocPromptTask(Task):
                 all_key_probs = [1 for _ in all_examples]
 
                 example_index_to_features = collections.defaultdict(list)
+
                 for feature in all_features:
                     example_index_to_features[feature.qas_id].append(feature)
 
@@ -162,41 +163,22 @@ class DocPromptTask(Task):
                         result = unique_id_to_result[feature.unique_id]
 
                         # find preds
-                        ans_pos, Prob = find_answer_pos(result.seq_logits, feature)
+                        ans_pos = find_answer_pos(result.seq_logits, feature)
                         preds.extend(
                             get_doc_pred(
                                 result, ans_pos, example, self._tokenizer, feature, True, all_key_probs, example_index
                             )
                         )
-                    bboxes = []
+
                     if not preds:
                         preds.append({"value": "", "prob": 0.0, "start": -1, "end": -1})
                     else:
                         preds = sort_res(example_query, preds, example_doc_tokens, all_boxes[page_id], self._lang)[
                             : self._topn
                         ]
-                        for pred in preds:
-                            start = pred["start"]
-                            end = pred["end"]
-                            boxes = example.ori_boxes[start:end + 1]
-                            # combine boxes
-                            if len(boxes) >= 1:
-                                try:
-                                    box_x1 = min([boxes[i][0].left for i in range(len(boxes))])
-                                    box_y1 = min([boxes[i][0].top for i in range(len(boxes))])
-                                    box_x2 = max([boxes[i][0].right for i in range(len(boxes))])
-                                    box_y2 = max([boxes[i][0].bottom for i in range(len(boxes))])
-                                except:
-                                    box_x1 = min([boxes[i][0].left for i in range(len(boxes))])
-                                    box_y1 = min([boxes[i][0].top for i in range(len(boxes))])
-                                    box_x2 = max([boxes[i][0].left + boxes[i][0].width for i in range(len(boxes))])
-                                    box_y2 = max([boxes[i][0].top + boxes[i][0].height for i in range(len(boxes))])
-
-                                bboxes.append([box_x1, box_y1, box_x2, box_y2])
-
-                    all_predictions.append({"prompt": example_query, "result": preds,"bbox":bboxes})
+                    all_predictions.append({"prompt": example_query, "result": preds})
             all_predictions_list.append(all_predictions)
-            return all_predictions_list
+        return all_predictions_list
 
     def _postprocess(self, inputs):
         """

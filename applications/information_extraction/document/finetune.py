@@ -20,7 +20,7 @@ from typing import List, Optional
 import paddle
 from utils import convert_example, reader
 
-from paddlenlp.datasets import load_dataset
+from paddlenlp.datasets import load_dataset, MapDataset
 from paddlenlp.trainer import (
     CompressionArguments,
     PdArgumentParser,
@@ -28,7 +28,7 @@ from paddlenlp.trainer import (
     get_last_checkpoint,
 )
 from paddlenlp.transformers import UIEX, AutoTokenizer, export_model
-from paddlenlp.utils.ie_utils import compute_metrics, uie_loss_func
+from paddlenlp.utils.ie_utils import compute_metrics, uie_loss_func, unify_prompt_name, get_relation_type_dict
 from paddlenlp.utils.log import logger
 
 
@@ -120,9 +120,28 @@ def main():
         max_seq_len=data_args.max_seq_len,
         dynamic_max_length=data_args.dynamic_max_length,
     )
+
+    class_dict = {}
+    relation_data = []
+
+    for data in dev_ds:
+        class_name = unify_prompt_name(data["prompt"])
+        # Only positive examples are evaluated in debug mode
+        if len(data["result_list"]) != 0:
+            p = "的"
+            if p not in data["prompt"]:
+                class_dict.setdefault(class_name, []).append(data)
+            else:
+                relation_data.append((data["prompt"], data))
+
+    relation_type_dict = get_relation_type_dict(relation_data, schema_lang='ch')
+    test_datasets = []
+    for key in class_dict.keys():
+        test_ds = MapDataset(class_dict[key])
+        test_ds = test_ds.map(trans_fn)
+        test_datasets.append(test_ds)
     train_ds = train_ds.map(trans_fn)
     dev_ds = dev_ds.map(trans_fn)
-
     trainer = Trainer(
         model=model,
         criterion=uie_loss_func,
@@ -131,6 +150,7 @@ def main():
         eval_dataset=dev_ds if training_args.do_eval else None,
         tokenizer=tokenizer,
         compute_metrics=compute_metrics,
+        trans_fn=trans_fn
     )
 
     trainer.optimizer = paddle.optimizer.AdamW(
@@ -155,6 +175,25 @@ def main():
     if training_args.do_eval:
         eval_metrics = trainer.evaluate()
         trainer.log_metrics("eval", eval_metrics)
+        logger.info("-----Evaluate model-------")
+        logger.info("Class Name: ALL CLASSES")
+        logger.info(
+            "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+            % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
+        )
+        logger.info("-----------------------------")
+        if data_args.debug:
+            for key in class_dict.keys():
+                test_ds = MapDataset(class_dict[key])
+                test_ds = test_ds.map(trans_fn)
+                eval_metrics = trainer.evaluate(eval_dataset=test_ds)
+
+                logger.info("Class Name: %s" % key)
+                logger.info(
+                    "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+                    % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
+                )
+                logger.info("-----------------------------")
 
     # export inference model
     if training_args.do_export:

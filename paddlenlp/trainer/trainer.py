@@ -28,6 +28,7 @@ import sys
 import time
 import types
 from collections.abc import Mapping
+from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -38,10 +39,14 @@ import paddle.distributed as dist
 import paddle.nn as nn
 from packaging import version
 from paddle.distributed import fleet
+from paddle.distributed.fleet.meta_optimizers.dygraph_optimizer import (
+    DygraphShardingOptimizer,
+)
 from paddle.distributed.fleet.utils.hybrid_parallel_util import (
     fused_allreduce_gradients,
 )
 from paddle.io import DataLoader, Dataset, DistributedBatchSampler
+from paddlenlp.datasets import MapDataset
 from tqdm.auto import tqdm
 
 from ..data import DataCollator, DataCollatorWithPadding, default_data_collator
@@ -200,6 +205,7 @@ class Trainer:
         callbacks: Optional[List[TrainerCallback]] = None,
         optimizers: Tuple[paddle.optimizer.Optimizer, paddle.optimizer.lr.LRScheduler] = (None, None),
         preprocess_logits_for_metrics: Callable[[paddle.Tensor, paddle.Tensor], paddle.Tensor] = None,
+        trans_fn = None,
     ):
 
         if args is None:
@@ -208,6 +214,7 @@ class Trainer:
             args = TrainingArguments(output_dir=output_dir)
 
         self.args = args
+        self.trains_fn = trans_fn
         self.is_in_train = False
         # self.do_grad_scaling = args.fp16
 
@@ -547,17 +554,17 @@ class Trainer:
         self._load_optimizer_and_scheduler(resume_from_checkpoint)
 
         logger.info("***** Running training *****")
-        logger.info(f"  Num examples = {num_examples}")
+        logger.info(f"  Num examples = {num_examples:,}")
         logger.info(f"  Num Epochs = {num_train_epochs}")
         logger.info(f"  Instantaneous batch size per device = {args.per_device_train_batch_size}")
         logger.info(f"  Total train batch size (w. parallel, distributed & accumulation) = {total_train_batch_size}")
         logger.info(f"  Gradient Accumulation steps = {args.gradient_accumulation_steps}")
-        logger.info(f"  Total optimization steps = {max_steps}")
-        logger.info(f"  Total num train samples = {num_train_samples}")
+        logger.info(f"  Total optimization steps = {max_steps:,}")
+        logger.info(f"  Total num train samples = {num_train_samples:,}")
         # per_device_trainable_numel = sum(p.numel().item() for p in model.parameters() if not p.stop_gradient)
         # TODO: Temporary fix since Tensor.numel() not supported in distributed mode
         per_device_trainable_numel = sum(np.prod(p.shape) for p in model.parameters() if not p.stop_gradient)
-        logger.info(f"  Number of trainable parameters = {per_device_trainable_numel} (per device)")
+        logger.info(f"  Number of trainable parameters = {per_device_trainable_numel:,} (per device)")
         if self.args.use_hybrid_parallel:
             # todo fix for pipeline_parallel_degree
             parts_num = max(self.args.tensor_parallel_degree, 1) * max(self.args.pipeline_parallel_degree, 1)
@@ -571,7 +578,7 @@ class Trainer:
                 trainable_numel = int(trainable_numel_tensor.item()) // self.args.dataset_world_size
                 # the numel is roughly, because the tensor parallel still hold own bias or layer_norm weight without splited
                 # so, the trainable numel is a little bigger than real.
-                logger.info(f"  Number of trainable parameters = {trainable_numel} (all devices, roughly)")
+                logger.info(f"  Number of trainable parameters = {trainable_numel:,} (all devices, roughly)")
 
         start_time = time.time()
         self._globalstep_last_start_time = time.time()
@@ -918,9 +925,43 @@ class Trainer:
                         ignore_keys=ignore_keys_for_eval,
                         metric_key_prefix=f"eval_{eval_dataset_name}",
                     )
-            else:
-                metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
 
+            else:
+                # metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+                all_prompt = []
+                all_p = []
+                all_r = []
+                all_f1 = []
+                for d in self.eval_dataset.new_data:
+                    all_prompt.append(d["prompt"])
+
+                all_prompt = list(set(all_prompt))
+
+                for key in all_prompt:
+                    test_ds = MapDataset([])
+                    for d in self.eval_dataset.new_data:
+                        if d["prompt"] == key:
+                            test_ds.data.append(d)
+                            test_ds.new_data.append(d)
+                    test_ds = test_ds.map(self.trains_fn)
+                    eval_metrics = self.evaluate(eval_dataset=test_ds,ignore_keys=ignore_keys_for_eval)
+                    all_p.append(eval_metrics["eval_precision"])
+                    all_r.append(eval_metrics["eval_recall"])
+                    all_f1.append(eval_metrics["eval_f1"])
+                    logger.info("Class Name: %s" % key)
+                    logger.info(
+                        "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+                        % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
+                    )
+                    logger.info("-----------------------------")
+                logger.info(f"-----On step {self.state.global_step}-------")
+                logger.info("-----Evaluate model-------")
+                logger.info("Class Name: ALL CLASSES")
+                logger.info(
+                    "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+                    % (np.mean(all_p), np.mean(all_r), np.mean(all_f1))
+                )
+                logger.info("-----------------------------")
         if self.control.should_save:
             self._save_checkpoint(model, metrics=metrics)
             self.control = self.callback_handler.on_save(self.args, self.state, self.control)
@@ -1115,11 +1156,14 @@ class Trainer:
             if hasattr(optimizer_cls, "_create_master_weight") and self.args.fp16_opt_level == "O2":
                 optimizer_kwargs["multi_precision"] = True
 
-            if ShardingOption.SHARD_OP in self.args.sharding:
-                from paddle.distributed.fleet.meta_optimizers.dygraph_optimizer import (
-                    DygraphShardingOptimizer,
-                )
+            def is_new_version_sharding_stage1_optimizer():
+                signature_keys = set(inspect.signature(DygraphShardingOptimizer).parameters.keys())
+                return "inner_optimizer_class" not in signature_keys
 
+            if ShardingOption.SHARD_OP in self.args.sharding and not is_new_version_sharding_stage1_optimizer():
+                # for backward compatibility.
+                # this call will raise, if sharding stage1 is supported in HybridParallelOptimizer,
+                # in which case, the logic follows will handle it
                 self.optimizer = DygraphShardingOptimizer(
                     hcg=fleet.get_hybrid_communicate_group(),
                     user_defined_strategy=None,
@@ -1241,6 +1285,9 @@ class Trainer:
                 learning_rate=self.args.learning_rate,
                 num_warmup_steps=warmup,
                 num_training_steps=num_training_steps,
+                num_cycles=self.args.num_cycles,
+                lr_end=self.args.lr_end,
+                power=self.args.power,
             )
 
         return self.lr_scheduler
@@ -1506,7 +1553,13 @@ class Trainer:
             self._past = outputs[self.args.past_index]
 
         # We don't use .loss here since the model may return tuples instead of ModelOutput.
-        loss = outputs["loss"] if isinstance(outputs, dict) else outputs[0]
+        loss = outputs["loss"] if isinstance(outputs, dict) else outputs
+        if isinstance(outputs, dict):
+            loss = outputs["loss"]
+        elif isinstance(outputs, tuple):
+            loss = outputs[0]
+        else:
+            loss = outputs
 
         return (loss, outputs) if return_outputs else loss
 
@@ -1903,8 +1956,6 @@ class Trainer:
             metric_key_prefix=metric_key_prefix,
             max_eval_iters=self.args.max_evaluate_steps,
         )
-        # output
-        # eval_dataset
 
         total_batch_size = self.args.eval_batch_size * self.args.dataset_world_size
         output.metrics.update(
