@@ -262,6 +262,7 @@ class DataConverter(object):
         schema_lang="ch",
         ocr_lang="en",
         anno_type="text",
+        img_prefix="",
     ):
         """Init Data Converter"""
         self.negative_ratio = negative_ratio
@@ -275,6 +276,7 @@ class DataConverter(object):
         self.anno_type = anno_type
         self.label_studio_file = label_studio_file
         self.ignore_list = ["属性值", "object"]
+        self.img_prefix = img_prefix
 
     def process_text_tag(self, line, task_type="ext"):
         items = {}
@@ -306,7 +308,7 @@ class DataConverter(object):
             items["label"] = line["annotations"][0]["result"][0]["value"]["choices"]
         return items
 
-    def process_image_tag(self, line, task_type="ext"):
+    def process_image_tag(self, line,prefix,task_type="ext"):
         def _io1(box1, box2):
             """calc intersection over box1 area"""
             x1 = max(box1[0], box2[0])
@@ -366,6 +368,7 @@ class DataConverter(object):
         img_file = os.path.basename(line["data"]["image"])
         p = img_file.find("-")
         img_file = img_file[p + 1 :]
+        img_file = prefix + img_file
 
         img_path = os.path.join("/".join(self.label_studio_file.split("/")[:-1]), "images", img_file)
         if not os.path.exists(img_path):
@@ -399,7 +402,15 @@ class DataConverter(object):
             for e in result_list:
                 if e["type"] != "rectanglelabels":
                     continue
-                assert img_w == e["original_width"] and img_h == e["original_height"], "Image size not match"
+                if img_w != e["original_width"] or img_h != e["original_height"]:
+                    logger.warning(
+                        "Image size not match, image size is %d*%d, but label studio size is %d*%d"
+                        % (img_w, img_h, e["original_width"], e["original_height"])
+                    )
+                    logger.warning(f"Skip this image:{line['data']['image']}")
+                    continue
+                # else:
+                #     continue
                 box = [
                     e["value"]["x"] * 0.01 * img_w,
                     e["value"]["y"] * 0.01 * img_h,
@@ -507,7 +518,7 @@ class DataConverter(object):
                     items = self.process_text_tag(line, task_type="ext")
                     image, bbox = None, None
                 elif self.anno_type == "image":
-                    items = self.process_image_tag(line, task_type="ext")
+                    items = self.process_image_tag(line, self.img_prefix, task_type="ext")
                     if items is None:
                         continue
                     image, bbox = items["image"], items["bbox"]

@@ -1687,7 +1687,7 @@ class Trainer:
         rng_states = {
             "python": random.getstate(),
             "numpy": np.random.get_state(),
-            "cuda": [k.current_seed() for k in paddle.get_rng_state()],
+            "cuda": [k.current_seed() for k in paddle.get_cuda_rng_state()],
             "cpu": paddle.framework.core.default_cpu_generator().get_state().current_seed(),
         }
         if self.args.use_hybrid_parallel:
