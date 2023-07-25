@@ -358,6 +358,16 @@ class Trainer:
 
         # very last
         self._memory_tracker.stop_and_update_metrics()
+        all_prompt = []
+        self.all_eval_dataset = {}
+        for d in self.eval_dataset.new_data:
+            key = d["prompt"]
+            test_ds = MapDataset([])
+            for d in self.eval_dataset.new_data:
+                if d["prompt"] == key:
+                    test_ds.data.append(d)
+                    test_ds.new_data.append(d)
+            self.all_eval_dataset[key] = test_ds.map(self.trains_fn)
 
     def add_callback(self, callback):
         """
@@ -928,22 +938,11 @@ class Trainer:
 
             else:
                 # metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
-                all_prompt = []
                 all_p = []
                 all_r = []
                 all_f1 = []
-                for d in self.eval_dataset.new_data:
-                    all_prompt.append(d["prompt"])
-
-                all_prompt = list(set(all_prompt))
-
-                for key in all_prompt:
-                    test_ds = MapDataset([])
-                    for d in self.eval_dataset.new_data:
-                        if d["prompt"] == key:
-                            test_ds.data.append(d)
-                            test_ds.new_data.append(d)
-                    test_ds = test_ds.map(self.trains_fn)
+                for key in self.all_eval_dataset.keys():
+                    test_ds = self.all_eval_dataset[key]
                     eval_metrics = self.evaluate(eval_dataset=test_ds,ignore_keys=ignore_keys_for_eval)
                     all_p.append(eval_metrics["eval_precision"])
                     all_r.append(eval_metrics["eval_recall"])
@@ -2024,20 +2023,20 @@ class Trainer:
                 )
                 dataloader._batch_sampler.set_epoch(consumed_samples=consumed_samples)
 
-        logger.info(f"***** Running {description} *****")
-        if has_length(dataloader):
-            logger.info(f"  Num examples = {self.num_examples(dataloader)}")
-            if max_eval_iters > 0:
-                logger.info(f"  Total prediction steps = {max_eval_iters}")
-            else:
-                logger.info(f"  Total prediction steps = {len(dataloader)}")
-        else:
-            logger.info("  Num examples: Unknown")
-            if max_eval_iters > 0:
-                logger.info(f"  Total prediction steps = {max_eval_iters}")
-
-        logger.info(f"  Pre device batch size = {batch_size}")
-        logger.info(f"  Total Batch size = {batch_size * self.args.dataset_world_size}")
+        # logger.info(f"***** Running {description} *****")
+        # if has_length(dataloader):
+        #     logger.info(f"  Num examples = {self.num_examples(dataloader)}")
+        #     if max_eval_iters > 0:
+        #         logger.info(f"  Total prediction steps = {max_eval_iters}")
+        #     else:
+        #         logger.info(f"  Total prediction steps = {len(dataloader)}")
+        # else:
+        #     logger.info("  Num examples: Unknown")
+        #     if max_eval_iters > 0:
+        #         logger.info(f"  Total prediction steps = {max_eval_iters}")
+        #
+        # logger.info(f"  Pre device batch size = {batch_size}")
+        # logger.info(f"  Total Batch size = {batch_size * self.args.dataset_world_size}")
 
         model.eval()
 
