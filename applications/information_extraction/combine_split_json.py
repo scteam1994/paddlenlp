@@ -3,7 +3,6 @@ import json
 import numpy as np
 import cv2
 
-
 def get_point(event, x, y, flags, param):
     # 鼠标单击事件
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -38,7 +37,7 @@ def save_img(img, save_path):
     cv2.imwrite(save_path, img)
 
 
-def combine_json(json_list):
+def combine_json(json_list,output_dir):
     json_combine = []
     img_list_combine = []
     file_cnt = 0
@@ -46,13 +45,14 @@ def combine_json(json_list):
         with open(json_file, 'r') as f:
             data = json.load(f)
 
-            img_list, data, file_cnt = rename_img_and_copy(data, file_cnt, json_file)
+            img_list, data, file_cnt = rename_img_and_copy(data, file_cnt, json_file,output_dir=output_dir)
             json_combine.extend(data)
+            split_json(data, ratio=0.7, img_list=img_list, output_dir = os.path.join(output_dir, json_file.split('/')[-1][:4]))
             img_list_combine.extend(img_list)
     return img_list_combine, json_combine
 
 
-def rename_img_and_copy(json_combine,cnt,json_file=None):
+def rename_img_and_copy(json_combine, cnt, json_file, output_dir):
     img_list = []
     img_list_raw = []
     img_rename_log = {}
@@ -65,7 +65,7 @@ def rename_img_and_copy(json_combine,cnt,json_file=None):
         json_combine[i]['data']['image'] = img.replace(ori_img_name, tar_img_name)
         img_list.append(json_combine[i]['data']['image'])
         ori_img_path = os.path.join(os.path.dirname(json_file), 'images', ori_img_name)
-        tar_img_path = os.path.join('/home/topnet/图片/uie_data/images', tar_img_name)
+        tar_img_path = os.path.join(output_dir, 'images', tar_img_name)
         img_rename_log[ori_img_path] = tar_img_path
         # cnt += 1
         # continue
@@ -80,30 +80,30 @@ def rename_img_and_copy(json_combine,cnt,json_file=None):
         else:
             print(f'not exists: {ori_img_name}')
         cnt += 1
-    with open(f'/home/topnet/图片/uie_data/img_rename_log_{os.path.basename(json_file)}', 'w') as f:
+    with open(os.path.join(output_dir, f'img_rename_log_{os.path.basename(json_file)}'), 'w+') as f:
         json.dump(img_rename_log, f)
     return img_list, json_combine, cnt
 
 
-def split_json(json_comb, ratio=0.7, img_list=None):
+def split_json(json_comb, ratio , img_list,output_dir):
     if img_list:
         img_train = np.random.choice(img_list, int(len(img_list) * ratio), replace=False)
         img_dev = list(set(img_list) - set(img_train))
-        with open('/home/topnet/图片/uie_data/train_list.txt', 'w') as f:
+        with open(os.path.join(output_dir, 'train_list.txt'), 'w') as f:
             f.write('\n'.join(img_train))
-        with open('/home/topnet/图片/uie_data/dev_list.txt', 'w') as f:
+        with open(os.path.join(output_dir, 'dev_list.txt'), 'w') as f:
             f.write('\n'.join(img_dev))
 
     else:
-        with open('/home/topnet/图片/uie_data/train_list.txt', 'r') as f:
+        with open(os.path.join(output_dir, 'train_list.txt'), 'r') as f:
             img_train = f.read().split('\n')
-        with open('/home/topnet/图片/uie_data/dev_list.txt', 'r') as f:
+        with open(os.path.join(output_dir, 'dev_list.txt'), 'r') as f:
             img_dev = f.read().split('\n')
     json_train = [json_data for json_data in json_comb if json_data['data']['image'] in img_train]
     json_dev = [json_data for json_data in json_comb if json_data['data']['image'] in img_dev]
-    with open('/home/topnet/图片/uie_data/train.json', 'w') as f:
+    with open(os.path.join(output_dir, 'train.json'), 'w') as f:
         json.dump(json_train, f)
-    with open('/home/topnet/图片/uie_data/dev.json', 'w') as f:
+    with open(os.path.join(output_dir, 'dev.json'), 'w') as f:
         json.dump(json_dev, f)
 
 
@@ -133,13 +133,16 @@ def check_json(json_list):
 
 
 if __name__ == '__main__':
+    output_dir = '/home/topnet/uie_data'
     json_list = [
-                '/home/topnet/图片/5-bank_receipt银行回单/bank.json',
-                 '/home/topnet/图片/5-bank_receipt银行回单/bank2.json',
-                 '/home/topnet/图片/invoice_images/invoice1.json',
-                 '/home/topnet/图片/invoice_images/invoice2.json',
-                 ]
+        '/home/topnet/0714/project-77-at-2023-07-25-11-08-b751164d.json',
+        '/home/topnet/0714/project-78-at-2023-07-24-13-02-89da60e7.json',
+        '/home/topnet/0714/project-79-at-2023-07-25-09-23-6b7314b8.json',
+        '/home/topnet/0714/project-80-at-2023-07-25-06-18-b34e09b1.json',
+        '/home/topnet/0714/project-81-at-2023-07-25-12-40-fa44385f.json',
+        '/home/topnet/0714/project-82-at-2023-07-24-13-01-416a98d1.json',
+    ]
     # check_json(json_list)
     ratio = 0.7
-    img_list, json_combine = combine_json(json_list)
-    split_json(json_combine, ratio, img_list)
+    img_list, json_combine = combine_json(json_list,output_dir)
+    # split_json(json_combine, ratio, img_list, output_dir)

@@ -88,7 +88,6 @@ def do_convert():
         schema_lang=args.schema_lang,
         ocr_lang=args.ocr_lang,
         anno_type=anno_type,
-        img_prefix=args.img_prefix,
     )
 
     if args.task_type == "ext":
@@ -120,8 +119,8 @@ if __name__ == "__main__":
     # train
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--label_studio_file", default="/home/topnet/图片/uie_data/train.json", type=str, help="The annotation file exported from label studio platform.")
-    parser.add_argument("--save_dir", default="./0723det_nega10/train", type=str, help="The path of data that you wanna save.")
+    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/rest/uie_data/train_s.json", type=str, help="The annotation file exported from label studio platform.")
+    parser.add_argument("--save_dir", default="./0723det/rest/train", type=str, help="The path of data that you wanna save.")
     parser.add_argument("--negative_ratio", default=5, type=int, help="Used only for the extraction task, the ratio of positive and negative samples, number of negtive samples = negative_ratio * number of positive samples")
     parser.add_argument("--splits", default=[1.0, 0.0, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
     parser.add_argument("--task_type", choices=['ext', 'cls'], default="ext", type=str, help="Select task type, ext for the extraction task and cls for the classification task, defaults to ext.")
@@ -141,8 +140,8 @@ if __name__ == "__main__":
     # eval
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--label_studio_file", default="/home/topnet/图片/uie_data/dev.json", type=str, help="The annotation file exported from label studio platform.")
-    parser.add_argument("--save_dir", default="./0723det_nega10/eval", type=str, help="The path of data that you wanna save.")
+    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/rest/uie_data/dev_s.json", type=str, help="The annotation file exported from label studio platform.")
+    parser.add_argument("--save_dir", default="./0723det/rest/eval", type=str, help="The path of data that you wanna save.")
     parser.add_argument("--negative_ratio", default=5, type=int, help="Used only for the extraction task, the ratio of positive and negative samples, number of negtive samples = negative_ratio * number of positive samples")
     parser.add_argument("--splits", default=[0.0, 1.0, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
     parser.add_argument("--task_type", choices=['ext', 'cls'], default="ext", type=str, help="Select task type, ext for the extraction task and cls for the classification task, defaults to ext.")

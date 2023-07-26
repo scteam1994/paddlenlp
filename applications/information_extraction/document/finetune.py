@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import sys
 from dataclasses import dataclass, field
 from functools import partial
 from typing import List, Optional
@@ -41,11 +42,11 @@ class DataArguments:
     """
 
     train_path: str = field(
-        default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
+        default='0723det/invoice/train/train.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )
 
     dev_path: str = field(
-        default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
+        default='0723det/invoice/eval/dev.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )
 
     max_seq_len: Optional[int] = field(
@@ -70,7 +71,7 @@ class ModelArguments:
 
     model_name_or_path: Optional[str] = field(default="uie-x-base", metadata={"help": "Path to pretrained model"})
     export_model_dir: Optional[str] = field(
-        default=None,
+        default='None',
         metadata={"help": "Path to directory to store the exported inference model."},
     )
 
@@ -213,4 +214,13 @@ def main():
 
 
 if __name__ == "__main__":
+    f = open("log.txt", "w+")
+    sys.stdout = f
     main()
+    """
+    训练计划：
+    1.train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000
+    2.train:rest(200),dev:rest(100) eval:rest(100) steps:3000
+    3.train:all_half(200),dev:dev_half(100) eval:[invoice(100),est(100)] steps:3000
+    4.train:all(200),dev:dev_half(100) eval:[invoice(100),est(100)] steps:6000
+    """
