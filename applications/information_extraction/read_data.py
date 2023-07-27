@@ -22,15 +22,15 @@ def combine_txt(txt_path_list, output_path):
         f.writelines(data)
 def combine():
 
-    txt_path_list = ['/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/invoice/train/train.txt',
-                        '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/rest/train/train.txt']
-    output_path = '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/all/train.txt'
+    txt_path_list = ['/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/invoice/train/train.txt',
+                        '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/rest/train/train.txt']
+    output_path = '/applications/information_extraction/0723det_layout_analysis/all/train/train.txt'
 
     combine_txt(txt_path_list, output_path)
 
-    txt_path_list = ['/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/invoice/eval/dev.txt',
-                        '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/rest/eval/dev.txt']
-    output_path = '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/all/dev.txt'
+    txt_path_list = ['/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/invoice/eval/dev.txt',
+                        '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/rest/eval/dev.txt']
+    output_path = '/applications/information_extraction/0723det_layout_analysis/all/eval/dev.txt'
 
     combine_txt(txt_path_list, output_path)
 
@@ -44,10 +44,10 @@ def cut(txt_path):
 
 
 if __name__ == '__main__':
-    # combine()
-    txt_path = '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/all/train.txt'
+    combine()
+    txt_path = '/applications/information_extraction/0723det_layout_analysis/all/train/train.txt'
     cut(txt_path)
-    txt_path = '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det/all/dev.txt'
+    txt_path = '/applications/information_extraction/0723det_layout_analysis/all/eval/dev.txt'
     cut(txt_path)
 
 

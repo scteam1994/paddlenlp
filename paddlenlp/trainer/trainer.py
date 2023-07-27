@@ -941,6 +941,16 @@ class Trainer:
                 all_p = []
                 all_r = []
                 all_f1 = []
+                eval_metrics = self.evaluate(ignore_keys=ignore_keys_for_eval,
+                                             metric_key_prefix="eval")
+                logger.info(f"-----On step {self.state.global_step}-------")
+                logger.info("-----Evaluate model-------")
+                logger.info("Class Name: ALL CLASSES")
+                logger.info(
+                    "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+                    % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
+                )
+                logger.info("-----------------------------")
                 for key in self.all_eval_dataset.keys():
                     test_ds = self.all_eval_dataset[key]
                     eval_metrics = self.evaluate(eval_dataset=test_ds,ignore_keys=ignore_keys_for_eval,metric_key_prefix=f"eval_{key}")
@@ -954,16 +964,7 @@ class Trainer:
                         % (eval_metrics[f"eval_{key}_precision"], eval_metrics[f"eval_{key}_recall"], eval_metrics[f"eval_{key}_f1"])
                     )
                     logger.info("-----------------------------")
-                eval_metrics = self.evaluate(eval_dataset=test_ds, ignore_keys=ignore_keys_for_eval,
-                                             metric_key_prefix="eval")
-                logger.info(f"-----On step {self.state.global_step}-------")
-                logger.info("-----Evaluate model-------")
-                logger.info("Class Name: ALL CLASSES")
-                logger.info(
-                    "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-                    % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
-                )
-                logger.info("-----------------------------")
+
         if self.control.should_save:
             self._save_checkpoint(model, metrics=metrics)
             self.control = self.callback_handler.on_save(self.args, self.state, self.control)

@@ -42,11 +42,11 @@ class DataArguments:
     """
 
     train_path: str = field(
-        default='0723det_layout_analysis/invoice/train/train.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
+        default='0723det_layout_analysis/all/train/train_half.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )
 
     dev_path: str = field(
-        default='0723det_layout_analysis/invoice/eval/dev.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
+        default='0723det_layout_analysis/all/eval/dev_half.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )
 
     max_seq_len: Optional[int] = field(
@@ -223,8 +223,8 @@ if __name__ == "__main__":
     main()
     """
     训练计划：
-    1.train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000 done
-    2.layout_analysis True train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000
+    done 1.train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000 
+    done 2.layout_analysis True train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000 
     3.layout_analysis True train:all_half(200),dev:all_half(100) eval:[invoice(100),rest(100)] steps:3000
     4.layout_analysis True train:rest(200),dev:rest(100) eval:rest(100) steps:3000
     5.layout_analysis True train:all(400),dev:all_half(100) eval:[invoice(100),rest(100)] steps:6000

@@ -236,7 +236,10 @@ class MapDataset(Dataset):
     """
 
     def __init__(self, data, **kwargs):
-        self.data = data
+        self.data = []
+        for d in data:
+            if d['content']:
+                self.data.append(d)
         self._transform_pipline = []
         self.new_data = self.data
         self.info = kwargs
