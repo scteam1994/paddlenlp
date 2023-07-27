@@ -948,14 +948,14 @@ class Trainer:
                     all_r.append(eval_metrics[f"eval_{key}_recall"])
                     all_f1.append(eval_metrics[f"eval_{key}_f1"])
                     logger.info("Class Name: %s" % key)
+                    logger.info("Class Num: %d" % len(test_ds))
                     logger.info(
                         "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
                         % (eval_metrics[f"eval_{key}_precision"], eval_metrics[f"eval_{key}_recall"], eval_metrics[f"eval_{key}_f1"])
                     )
                     logger.info("-----------------------------")
-                eval_metrics["eval_precision"] = np.mean(all_p)
-                eval_metrics["eval_recall"] = np.mean(all_r)
-                eval_metrics["eval_f1"] = np.mean(all_f1)
+                eval_metrics = self.evaluate(eval_dataset=test_ds, ignore_keys=ignore_keys_for_eval,
+                                             metric_key_prefix="eval")
                 logger.info(f"-----On step {self.state.global_step}-------")
                 logger.info("-----Evaluate model-------")
                 logger.info("Class Name: ALL CLASSES")

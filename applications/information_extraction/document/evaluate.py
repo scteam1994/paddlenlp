@@ -110,14 +110,14 @@ def do_eval():
         tokenizer=tokenizer,
         compute_metrics=compute_metrics,
     )
-    # eval_metrics = trainer.evaluate()
-    # logger.info("-----Evaluate model-------")
-    # logger.info("Class Name: ALL CLASSES")
-    # logger.info(
-    #     "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-    #     % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
-    # )
-    # logger.info("-----------------------------")
+    eval_metrics = trainer.evaluate()
+    logger.info("-----Evaluate model-------")
+    logger.info("Class Name: ALL CLASSES")
+    logger.info(
+        "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+        % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
+    )
+    logger.info("-----------------------------")
 
     if data_args.debug:
         for key in class_dict.keys():
