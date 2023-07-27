@@ -823,7 +823,6 @@ class PretrainedConfig:
             else:
                 # try to detect old-school config file
                 configuration_file = os.path.join(pretrained_model_name_or_path, LEGACY_CONFIG_NAME)
-
                 if os.path.exists(configuration_file):
                     resolved_config_file = configuration_file
                 else:
