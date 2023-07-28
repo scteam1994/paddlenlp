@@ -42,11 +42,11 @@ class DataArguments:
     """
 
     train_path: str = field(
-        default='0723det_layout_analysis/all/train/train_half.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
+        default='0723det_layout_analysis/invoice/train/train.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )
 
     dev_path: str = field(
-        default='0723det_layout_analysis/all/eval/dev_half.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
+        default='0723det_layout_analysis/invoice/eval/dev.txt', metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )
 
     max_seq_len: Optional[int] = field(
@@ -180,25 +180,6 @@ def main():
     if training_args.do_eval:
         eval_metrics = trainer.evaluate()
         trainer.log_metrics("eval", eval_metrics)
-        logger.info("-----Evaluate model-------")
-        logger.info("Class Name: ALL CLASSES")
-        logger.info(
-            "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-            % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
-        )
-        logger.info("-----------------------------")
-        if data_args.debug:
-            for key in class_dict.keys():
-                test_ds = MapDataset(class_dict[key])
-                test_ds = test_ds.map(trans_fn)
-                eval_metrics = trainer.evaluate(eval_dataset=test_ds)
-
-                logger.info("Class Name: %s" % key)
-                logger.info(
-                    "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-                    % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
-                )
-                logger.info("-----------------------------")
 
     # export inference model
     if training_args.do_export:
@@ -223,8 +204,8 @@ if __name__ == "__main__":
     main()
     """
     训练计划：
-    done 1.train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000 
-    done 2.layout_analysis True train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000 
+    remote 1.train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000 
+    local 2.layout_analysis True train:invoice(200),dev:invoice(100) eval:invoice(100) steps:3000 
     3.layout_analysis True train:all_half(200),dev:all_half(100) eval:[invoice(100),rest(100)] steps:3000
     4.layout_analysis True train:rest(200),dev:rest(100) eval:rest(100) steps:3000
     5.layout_analysis True train:all(400),dev:all_half(100) eval:[invoice(100),rest(100)] steps:6000

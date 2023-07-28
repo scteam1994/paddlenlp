@@ -24,30 +24,30 @@ def combine():
 
     txt_path_list = ['/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/invoice/train/train.txt',
                         '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/rest/train/train.txt']
-    output_path = '/applications/information_extraction/0723det_layout_analysis/all/train/train.txt'
+    output_path = './0723det_layout_analysis/all/train/train.txt'
 
     combine_txt(txt_path_list, output_path)
 
     txt_path_list = ['/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/invoice/eval/dev.txt',
                         '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/0723det_layout_analysis/rest/eval/dev.txt']
-    output_path = '/applications/information_extraction/0723det_layout_analysis/all/eval/dev.txt'
+    output_path = './0723det_layout_analysis/all/eval/dev.txt'
 
     combine_txt(txt_path_list, output_path)
 
 def cut(txt_path):
     with open(txt_path, 'r') as f:
         lines = f.readlines()
-        cut_lines(lines, os.path.join(os.path.dirname(txt_path), txt_path.replace('.txt','_half.txt')))
+        cut_lines(lines, txt_path.replace('.txt','_half.txt'))
 
 
 
 
 
 if __name__ == '__main__':
-    combine()
-    txt_path = '/applications/information_extraction/0723det_layout_analysis/all/train/train.txt'
-    cut(txt_path)
-    txt_path = '/applications/information_extraction/0723det_layout_analysis/all/eval/dev.txt'
+    # combine()
+    # txt_path = './0723det_layout_analysis/all/train/train.txt'
+    # cut(txt_path)
+    txt_path = './0723det_layout_analysis/invoice/eval/dev_half_half_half_half.txt'
     cut(txt_path)
 
 

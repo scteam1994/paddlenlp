@@ -1,21 +1,3 @@
-# Copyright 2020-present the HuggingFace Inc. team.
-# Copyright (c) 2022 PaddlePaddle Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# This file is modified from
-#  https://github.com/huggingface/transformers/blob/main/src/transformers/trainer.py
-
 import collections
 import contextlib
 import inspect
@@ -208,6 +190,7 @@ class Trainer:
         trans_fn = None,
     ):
 
+        self.best_metrics = 0.
         if args is None:
             output_dir = "tmp_trainer"
             logger.info(f"No `TrainingArguments` passed, using `output_dir={output_dir}`.")
@@ -360,14 +343,15 @@ class Trainer:
         self._memory_tracker.stop_and_update_metrics()
         all_prompt = []
         self.all_eval_dataset = {}
-        for d in self.eval_dataset.new_data:
-            key = d["prompt"]
-            test_ds = MapDataset([])
+        if isinstance(self.eval_dataset, dict):
             for d in self.eval_dataset.new_data:
-                if d["prompt"] == key:
-                    test_ds.data.append(d)
-                    test_ds.new_data.append(d)
-            self.all_eval_dataset[key] = test_ds.map(self.trains_fn)
+                key = d["prompt"]
+                test_ds = MapDataset([])
+                for d in self.eval_dataset.new_data:
+                    if d["prompt"] == key:
+                        test_ds.data.append(d)
+                        test_ds.new_data.append(d)
+                self.all_eval_dataset[key] = test_ds.map(self.trains_fn)
 
     def add_callback(self, callback):
         """
@@ -941,19 +925,20 @@ class Trainer:
                 all_p = []
                 all_r = []
                 all_f1 = []
-                eval_metrics = self.evaluate(ignore_keys=ignore_keys_for_eval,
+                metrics = self.evaluate(ignore_keys=ignore_keys_for_eval,
                                              metric_key_prefix="eval")
                 logger.info(f"-----On step {self.state.global_step}-------")
                 logger.info("-----Evaluate model-------")
                 logger.info("Class Name: ALL CLASSES")
                 logger.info(
                     "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-                    % (eval_metrics["eval_precision"], eval_metrics["eval_recall"], eval_metrics["eval_f1"])
+                    % (metrics["eval_precision"], metrics["eval_recall"], metrics["eval_f1"])
                 )
+                
                 logger.info("-----------------------------")
                 for key in self.all_eval_dataset.keys():
                     test_ds = self.all_eval_dataset[key]
-                    eval_metrics = self.evaluate(eval_dataset=test_ds,ignore_keys=ignore_keys_for_eval,metric_key_prefix=f"eval_{key}")
+                    eval_metrics = self.evaluate(eval_dataset=test_ds,ignore_keys=ignore_keys_for_eval,metric_key_prefix=f"eval_{key}",sub_eval=True)
                     all_p.append(eval_metrics[f"eval_{key}_precision"])
                     all_r.append(eval_metrics[f"eval_{key}_recall"])
                     all_f1.append(eval_metrics[f"eval_{key}_f1"])
@@ -964,10 +949,12 @@ class Trainer:
                         % (eval_metrics[f"eval_{key}_precision"], eval_metrics[f"eval_{key}_recall"], eval_metrics[f"eval_{key}_f1"])
                     )
                     logger.info("-----------------------------")
-
-        if self.control.should_save:
-            self._save_checkpoint(model, metrics=metrics)
-            self.control = self.callback_handler.on_save(self.args, self.state, self.control)
+            best_metrics = metrics["eval_f1"]
+        # if self.control.should_save:
+            if best_metrics > self.best_metrics:
+                self.best_metrics = best_metrics
+                self._save_checkpoint(model, metrics=metrics)
+            # self.control = self.callback_handler.on_save(self.args, self.state, self.control)
 
     def _get_learning_rate(self):
         return self.optimizer.get_lr()
@@ -1918,6 +1905,7 @@ class Trainer:
         eval_dataset: Optional[Dataset] = None,
         ignore_keys: Optional[List[str]] = None,
         metric_key_prefix: str = "eval",
+        sub_eval: bool = False,
     ) -> Dict[str, float]:
         """
         Run evaluation and returns metrics.
@@ -1944,7 +1932,8 @@ class Trainer:
             dictionary also contains the epoch number which comes from the training state.
         """
         # memory metrics - must set up as early as possible
-        self._memory_tracker.start()
+        if not sub_eval:
+            self._memory_tracker.start()
 
         eval_dataloader = self.get_eval_dataloader(eval_dataset)
         start_time = time.time()
@@ -1973,8 +1962,8 @@ class Trainer:
         self.log(output.metrics)
 
         self.control = self.callback_handler.on_evaluate(self.args, self.state, self.control, output.metrics)
-
-        self._memory_tracker.stop_and_update_metrics(output.metrics)
+        if not sub_eval:
+            self._memory_tracker.stop_and_update_metrics(output.metrics)
 
         return output.metrics
 

@@ -119,8 +119,8 @@ if __name__ == "__main__":
     # train
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/rest/uie_data/train_s.json", type=str, help="The annotation file exported from label studio platform.")
-    parser.add_argument("--save_dir", default="./0723det_layout_analysis/rest/train", type=str, help="The path of data that you wanna save.")
+    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/invoice/uie_data/train_s.json", type=str, help="The annotation file exported from label studio platform.")
+    parser.add_argument("--save_dir", default="./0723det_layout_analysis/invoice/train", type=str, help="The path of data that you wanna save.")
     parser.add_argument("--negative_ratio", default=5, type=int, help="Used only for the extraction task, the ratio of positive and negative samples, number of negtive samples = negative_ratio * number of positive samples")
     parser.add_argument("--splits", default=[1.0, 0.0, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
     parser.add_argument("--task_type", choices=['ext', 'cls'], default="ext", type=str, help="Select task type, ext for the extraction task and cls for the classification task, defaults to ext.")
@@ -140,8 +140,8 @@ if __name__ == "__main__":
     # # eval
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/rest/uie_data/dev_s.json", type=str, help="The annotation file exported from label studio platform.")
-    parser.add_argument("--save_dir", default="./0723det_layout_analysis/rest/eval", type=str, help="The path of data that you wanna save.")
+    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/invoice/uie_data/dev_s.json", type=str, help="The annotation file exported from label studio platform.")
+    parser.add_argument("--save_dir", default="./0723det_layout_analysis/invoice/eval", type=str, help="The path of data that you wanna save.")
     parser.add_argument("--negative_ratio", default=5, type=int, help="Used only for the extraction task, the ratio of positive and negative samples, number of negtive samples = negative_ratio * number of positive samples")
     parser.add_argument("--splits", default=[0.0, 1.0, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
     parser.add_argument("--task_type", choices=['ext', 'cls'], default="ext", type=str, help="Select task type, ext for the extraction task and cls for the classification task, defaults to ext.")

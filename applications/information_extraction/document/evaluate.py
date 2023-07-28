@@ -135,3 +135,17 @@ def do_eval():
 
 if __name__ == "__main__":
     do_eval()
+'''
+--device
+"gpu"
+--model_path
+./checkpoint-0723det-layout-invoice/model_best
+--test_path
+./0723det_layout_analysis/invoice/eval/dev.txt
+--output_dir
+./checkpoint-0723det-layout-invoice/model_best
+--label_names start_positions end_positions
+--max_seq_len
+512
+--per_device_eval_batch_size
+3'''
