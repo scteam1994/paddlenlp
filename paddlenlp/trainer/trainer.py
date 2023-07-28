@@ -343,7 +343,7 @@ class Trainer:
         self._memory_tracker.stop_and_update_metrics()
         all_prompt = []
         self.all_eval_dataset = {}
-        if isinstance(self.eval_dataset, dict):
+        if self.eval_dataset.data:
             for d in self.eval_dataset.new_data:
                 key = d["prompt"]
                 test_ds = MapDataset([])
