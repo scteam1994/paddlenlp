@@ -8,30 +8,44 @@ from paddleocr import PaddleOCR
 
 class Contract_front_classifier(object):
     def __init__(self,flatten=True):
-        self.keywords = [
-        ['发包', '承包', '甲方', '乙方', '买方', '卖方', '全称', '承租', '出租', '分包', '建设单位', '施工单位', '转让方',
-         '受让方', '转让人', '受让人','出卖','买受'],
-        ['(以下简称', '（以下简称'],
-        ['第一部分', '第一条', '第一节', '第一章'],
-        ['一、', '一。', '一．', '一.'],
-        ['协议书', '项目合同书', '采购合同', '销售合同', '买卖合同', '工程合同', '施工合同'],
-        ['概况', '概述'],
-        ['(盖章', '(签字', '(公章', '(盖单位章', '（盖章', '（签字', '（公章', '（盖单位章', '盖章)', '签字)', '公章)',
-         '盖单位章)', '盖章）', '签字）', '公章）''盖单位章）', '(签名', '（签名', '签名）', '签名)', '(印章', '（印章', '印章）',
-         '印章)', ],
-        ['附件', '附录', '目录', '说明'],
-        ['中华人民共和国'],
-        ['有限公司'],
-        ['代理', '委托'],
-        ['法定代表'],
-        ['补充'],
-        ['自愿', '公平'],
-        ['有限公司'],
+        self.keywords =[
+        [[20, 50, 100,'all'], '销售合同', '供货合同', '购销合同', '承揽合同', '销购合同', '采购协议', '供应合同',
+         '定做合同', '加工合同'],
+        [[20, 70, 'all'], '协议'],
+        [[20, 80,'all'], '项目合同书', '采购合同', '销售合同', '买卖合同', '工程合同', '施工合同', '合同条款',
+         '分包合同', '安装合同', '服务合同', '维护合同', '承包合同'],
+        [['all'],'甲方', '乙方','买方', '卖方',],
+        [[50,200], '发包', '承包', '全称', '承租', '出租', '分包', '建设单位',
+         '施工单位', '转让方', '受让方', '转让人', '受让人', '出卖', '买受', '供方', '需方', '委托人', '代建人',
+         '委托方', '代建方'],
+        [[50, 200], '编号', '地点', '时间', '签订'],
+        [['all'], '(以下简称', '（以下简称'],
+        [[50,'all'], '第一', '第一部分', '第一条', '第一节', '第一章'],
+        [['all'], '一、', '一。', '一．', '一.'],
+
+        [['all'], '概况', '概述'],
+        [['all'], '(盖章', '(签字', '(公章', '(盖单位章', '（盖章', '（签字', '（公章', '（盖单位章', '盖章)', '签字)',
+         '公章)', '盖单位章)', '盖章）', '签字）', '公章）''盖单位章）', '(签名', '（签名', '签名）', '签名)', '(印章',
+         '（印章', '印章）', '印章)', ],
+        [[10, 20, 'all'], '附件', '附录', '目录', '说明'],
+        [['all'], '中华人民共和国'],
+        [['all'], '有限公司'],
+        [['all'], '代理', '委托'],
+        [['all'], '法定代表'],
+        [['all'], '补充'],
+        [['all'], '自愿', '公平'],
+        [['all'], '有限公司'],
     ]
-        self.keywords_flatten = [self.keywords[i][j] for i in range(len(self.keywords)) for j in range(len(self.keywords[i]))]
+        self.keywords_flatten = []
+        for i in self.keywords:
+            word_limit = i[0]
+            for j in word_limit:
+                for k in i[1:]:
+                    if isinstance(k, str):
+                        self.keywords_flatten.append([j, k])
         if flatten:
             self.keywords = self.keywords_flatten
-        self.model = pickle.load(open('model.pkl','rb'))
+        self.model = pickle.load(open('contract_front_classify/model.pkl','rb'))
     def extract_text(self,ocr_result_dict):
 
         all_text = []
@@ -77,9 +91,20 @@ class Contract_front_classifier(object):
                         if keyword in head_words:
                             contains[i] = 1
                     elif isinstance(keyword,list):
-                        for kw in keyword:
-                            if kw in head_words:
-                                contains[i] = 1
+                        if "all" == keyword[0]:
+                            verf_data = head_words
+                            for kw in keyword[1:]:
+                                if kw in verf_data:
+                                    contains[i] = 1
+                        elif type(keyword[0]) == int:
+                            verf_data = head_words[:keyword[0]]
+                            for kw in keyword[1:]:
+                                if kw in verf_data:
+                                    contains[i] = 1
+                        else:
+                            for kw in keyword:
+                                if kw in head_words:
+                                    contains[i] = 1
             contains_data.append(contains)
         return contains_data
     def flatten_txt(self,txt_list:list):
@@ -99,12 +124,17 @@ class Contract_front_classifier(object):
 
 model = Contract_front_classifier()
 ocr = PaddleOCR(use_angle_cls=True, lang="ch",use_gpu=True)
-ocr_result_dict = {}
-test_path = '/home/topnet/图片/house_sale_contract/house_sale_contract'
-for k in os.listdir(test_path)[:5]:
+
+test_path = '/home/topnet/图片/house_sale_contract/1'
+for k in sorted(os.listdir(test_path)):
+    ocr_result_dict = {}
     img = cv2.imread(os.path.join(test_path,k))
     ocr_result_dict[k] = ocr.ocr(img)
-
+    res = model.inference(ocr_result_dict)
+    cv2.putText(img,str(res[0]),(100,100),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),5)
+    cv2.imshow(k,img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 """
 ocr_result_dict = {
 "img1.jpg":ocr.ocr(img1),
@@ -116,6 +146,6 @@ ocr.ocr(img1),ocr.ocr(img2),
 ]
 
 """
-def test(ocr_result_dict):
-    res = model.inference(ocr_result_dict)
-    print(res)
+# def test(ocr_result_dict):
+#     res = model.inference(ocr_result_dict)
+#     print(res)
