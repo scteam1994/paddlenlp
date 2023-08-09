@@ -161,7 +161,7 @@ class DocPromptTask(Task):
                         if feature.unique_id not in unique_id_to_result:
                             continue
                         result = unique_id_to_result[feature.unique_id]
-
+                        print(result.seq_logits)
                         # find preds
                         ans_pos = find_answer_pos(result.seq_logits, feature)
                         preds.extend(

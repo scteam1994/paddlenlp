@@ -14,6 +14,7 @@
 
 import json
 import os
+import sys
 from dataclasses import dataclass, field
 from functools import partial
 from typing import List, Optional
@@ -55,7 +56,7 @@ class DataArguments:
         default=512,
         metadata={
             "help": "The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded."
+                    "than this will be truncated, sequences shorter will be padded."
         },
     )
 
@@ -75,8 +76,8 @@ class ModelArguments:
         default="uie-base",
         metadata={
             "help": "Path to pretrained model, such as 'uie-base', 'uie-tiny', "
-            "'uie-medium', 'uie-mini', 'uie-micro', 'uie-nano', 'uie-base-en', "
-            "'uie-m-base', 'uie-m-large', or finetuned model path."
+                    "'uie-medium', 'uie-mini', 'uie-micro', 'uie-nano', 'uie-base-en', "
+                    "'uie-m-base', 'uie-m-large', or finetuned model path."
         },
     )
     export_model_dir: Optional[str] = field(
@@ -160,6 +161,7 @@ def main():
         eval_dataset=dev_ds if training_args.do_eval or training_args.do_compress else None,
         tokenizer=tokenizer,
         compute_metrics=compute_metrics,
+        trans_fn=trans_fn
     )
 
     trainer.optimizer = paddle.optimizer.AdamW(
@@ -240,4 +242,13 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.argv = ['finetune.py','--device', 'gpu', '--logging_steps', '10', '--save_steps', '1000', '--eval_steps', '1000', '--seed',
+                '1000', '--model_name_or_path', 'uie-base', '--output_dir', './checkpoint/model_best', '--train_path',
+                '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/contract_nopay/train.txt',
+                '--dev_path', '/home/topnet/PycharmProjects/pythonProject/paddlenlp/applications/information_extraction/contract_nopay/dev.txt',
+                '--max_seq_len', '256', '--per_device_train_batch_size',
+                '3', '--per_device_eval_batch_size', '3', '--num_train_epochs', '30', '--learning_rate', '1e-5',
+                '--do_train', '--do_eval', '--do_export', '--export_model_dir', './checkpoint/model_best',
+                '--overwrite_output_dir', '--disable_tqdm', 'True', '--metric_for_best_model', 'eval_f1',
+                '--load_best_model_at_end', 'True', '--save_total_limit', '1']
     main()

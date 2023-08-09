@@ -1,3 +1,5 @@
+from time import time
+
 from paddleocr import PaddleOCR
 from paddlenlp import Taskflow
 import cv2
@@ -7,7 +9,7 @@ import cv2
 
 # def do_ocr():
 #     ocr识别
-#     ocr_result = ocr.ocr("C:\Users\topnet\Desktop\invoice/image16.png", rec=True)
+#     ocr_result = ocr.ocr("./images/image16.png", rec=False)
 #     draw result
 #     image = cv2.imread("C:\Users\topnet\Desktop\invoice/image16.png")
 #     for line in ocr_result:
@@ -27,7 +29,7 @@ import cv2
 #             ocr_layout.append(([x1, y1, x2, y2], text))
 #     return ocr_layout
 
-ie_task = Taskflow("information_extraction", schema=["开户行及账号"], model="uie-x-base", layout_analysis=True,
+ie_task = Taskflow("information_extraction", schema=["开户行及账号"], model="uie-x-base", layout_analysis=False,
                    max_seq_len=1024,position_prob=0.3)
 
 # uie模型预测
@@ -35,6 +37,8 @@ ie_task = Taskflow("information_extraction", schema=["开户行及账号"], mode
 # ie_result = ie_task({"doc": "./images/image16.png", "layout": ocr_layout})
 
 # print(ie_result)
-cv2.imread("C:/Users/topnet/Desktop/invoice/image16.png")
-ie_result2 = ie_task({"doc": "./images/image16.png"})
+t = time()
+for _ in range(1):
+    ie_result2 = ie_task({"doc": "./images/image16.png"})
+print(time()-t)
 print(ie_result2)

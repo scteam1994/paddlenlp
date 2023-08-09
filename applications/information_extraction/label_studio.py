@@ -104,6 +104,8 @@ def do_convert():
         save_path = os.path.join(save_dir, file_name)
         with open(save_path, "w", encoding="utf-8") as f:
             for example in examples:
+                if example['prompt'] == "工程款支付方式":
+                    continue
                 f.write(json.dumps(example, ensure_ascii=False) + "\n")
                 count += 1
         logger.info("Save %d examples to %s." % (count, save_path))
@@ -119,10 +121,10 @@ if __name__ == "__main__":
     # train
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/invoice/uie_data/train_s.json", type=str, help="The annotation file exported from label studio platform.")
-    parser.add_argument("--save_dir", default="./0723det_layout_analysis/invoice/train", type=str, help="The path of data that you wanna save.")
+    parser.add_argument("--label_studio_file", default="/home/topnet/下载/uie.json", type=str, help="The annotation file exported from label studio platform.")
+    parser.add_argument("--save_dir", default="./contract_nopay", type=str, help="The path of data that you wanna save.")
     parser.add_argument("--negative_ratio", default=5, type=int, help="Used only for the extraction task, the ratio of positive and negative samples, number of negtive samples = negative_ratio * number of positive samples")
-    parser.add_argument("--splits", default=[1.0, 0.0, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
+    parser.add_argument("--splits", default=[0.7, 0.3, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
     parser.add_argument("--task_type", choices=['ext', 'cls'], default="ext", type=str, help="Select task type, ext for the extraction task and cls for the classification task, defaults to ext.")
     parser.add_argument("--options", default=["正向", "负向"], type=str, nargs="+", help="Used only for the classification task, the options for classification")
     parser.add_argument("--prompt_prefix", default="情感倾向", type=str, help="Used only for the classification task, the prompt prefix for classification")
@@ -138,22 +140,22 @@ if __name__ == "__main__":
 
     do_convert()
     # # eval
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/invoice/uie_data/dev_s.json", type=str, help="The annotation file exported from label studio platform.")
-    parser.add_argument("--save_dir", default="./0723det_layout_analysis/invoice/eval", type=str, help="The path of data that you wanna save.")
-    parser.add_argument("--negative_ratio", default=5, type=int, help="Used only for the extraction task, the ratio of positive and negative samples, number of negtive samples = negative_ratio * number of positive samples")
-    parser.add_argument("--splits", default=[0.0, 1.0, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
-    parser.add_argument("--task_type", choices=['ext', 'cls'], default="ext", type=str, help="Select task type, ext for the extraction task and cls for the classification task, defaults to ext.")
-    parser.add_argument("--options", default=["正向", "负向"], type=str, nargs="+", help="Used only for the classification task, the options for classification")
-    parser.add_argument("--prompt_prefix", default="情感倾向", type=str, help="Used only for the classification task, the prompt prefix for classification")
-    parser.add_argument("--is_shuffle", default="True", type=strtobool, help="Whether to shuffle the labeled dataset, defaults to True.")
-    parser.add_argument("--layout_analysis", default=True, type=bool, help="Enable layout analysis to optimize the order of OCR result.")
-    parser.add_argument("--seed", type=int, default=1000, help="Random seed for initialization")
-    parser.add_argument("--separator", type=str, default='##', help="Used only for entity/aspect-level classification task, separator for entity label and classification label")
-    parser.add_argument("--schema_lang", choices=["ch", "en"], default="ch", help="Select the language type for schema.")
-    parser.add_argument("--ocr_lang", choices=["ch", "en"], default="ch", help="Select the language type for OCR.")
-    parser.add_argument("--img_prefix", type=str, default="", help="The prefix of image url.")
-
-    args = parser.parse_args()
-    do_convert()
+    # parser = argparse.ArgumentParser()
+    #
+    # parser.add_argument("--label_studio_file", default="/home/topnet/uie_data/invoice/uie_data/dev_s.json", type=str, help="The annotation file exported from label studio platform.")
+    # parser.add_argument("--save_dir", default="./0723det_layout_analysis/invoice/eval", type=str, help="The path of data that you wanna save.")
+    # parser.add_argument("--negative_ratio", default=5, type=int, help="Used only for the extraction task, the ratio of positive and negative samples, number of negtive samples = negative_ratio * number of positive samples")
+    # parser.add_argument("--splits", default=[0.0, 1.0, 0.0], type=float, nargs="*", help="The ratio of samples in datasets. [0.6, 0.2, 0.2] means 60% samples used for training, 20% for evaluation and 20% for test.")
+    # parser.add_argument("--task_type", choices=['ext', 'cls'], default="ext", type=str, help="Select task type, ext for the extraction task and cls for the classification task, defaults to ext.")
+    # parser.add_argument("--options", default=["正向", "负向"], type=str, nargs="+", help="Used only for the classification task, the options for classification")
+    # parser.add_argument("--prompt_prefix", default="情感倾向", type=str, help="Used only for the classification task, the prompt prefix for classification")
+    # parser.add_argument("--is_shuffle", default="True", type=strtobool, help="Whether to shuffle the labeled dataset, defaults to True.")
+    # parser.add_argument("--layout_analysis", default=True, type=bool, help="Enable layout analysis to optimize the order of OCR result.")
+    # parser.add_argument("--seed", type=int, default=1000, help="Random seed for initialization")
+    # parser.add_argument("--separator", type=str, default='##', help="Used only for entity/aspect-level classification task, separator for entity label and classification label")
+    # parser.add_argument("--schema_lang", choices=["ch", "en"], default="ch", help="Select the language type for schema.")
+    # parser.add_argument("--ocr_lang", choices=["ch", "en"], default="ch", help="Select the language type for OCR.")
+    # parser.add_argument("--img_prefix", type=str, default="", help="The prefix of image url.")
+    #
+    # args = parser.parse_args()
+    # do_convert()

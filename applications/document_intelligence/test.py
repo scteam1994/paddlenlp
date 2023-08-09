@@ -6,7 +6,7 @@ from PIL import Image
 
 from paddlenlp import Taskflow
 from paddleocr import PaddleOCR, draw_ocr
-
+from time import time
 # result = [
 #     {
 #         'prompt': '图片上方购买方的称',
@@ -129,9 +129,13 @@ class Postprocessor(object):
         return r
 
 docprompt = Taskflow("document_intelligence", topn=2)
-result = docprompt([{"doc": "./image14.png",
-                "prompt": ["图片上方购买方的称", "图片下方销售方的名称"]}])
-p = Postprocessor()
-result = p(result)
+t= time()
+print("start")
+for _ in range(1):
+    result = docprompt([{"doc": "./invoice.jpg",
+                    "prompt": ["图片上方购买方的称"]}])
+print(time()-t)
+# p = Postprocessor()
+# result = p(result)
 
 print(result)
