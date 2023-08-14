@@ -1,19 +1,12 @@
-import glob
 import json
 import os
-import random
-import re
-from sklearn import svm
 import numpy as np
-
 import cv2
-from sklearn.model_selection import train_test_split
 from tqdm import tqdm
-
-from sklearn.metrics import accuracy_score
 import pickle
-
 import jieba
+
+from contract_front_classify.parameter import Parameter
 
 
 def frequency_count(txt_list):
@@ -82,7 +75,10 @@ def read_image_txt(root, folders, img_size, use_img=True):
         else:
             for img_path in data.keys():
                 img = cv2.imread(os.path.join(root, folder, img_path))
-                img = normalize(img, img_size)
+                try:
+                    img = normalize(img, img_size)
+                except:
+                    print()
                 imgs.append(img)
         img_datas.append(imgs)
     return (datas, img_datas)
@@ -144,7 +140,7 @@ def generate_data(keywords, words_all):
                         for kw in keyword[1:]:
                             if kw in verf_data:
                                 contains[i] = 1
-                                loc.append(head_words.find(kw)/len(head_words))
+                                loc.append(head_words.find(kw) / len(head_words))
                             else:
                                 loc.append(-1)
                     elif type(keyword[0]) == int:
@@ -153,10 +149,13 @@ def generate_data(keywords, words_all):
                             if kw in verf_data:
                                 contains[i] = verf_data.count(kw)
                     else:
-                        for kw in keyword:
+                        for kw in keyword[1:]:
                             if kw in head_words:
                                 contains[i] = head_words.count(kw)
-        contains_data.append(np.hstack((contains,np.array(loc))))
+                                loc.append(head_words.find(kw) / len(head_words))
+                            else:
+                                loc.append(-1)
+        contains_data.append(np.hstack((contains, np.array(loc))))
     return contains_data
 
 
@@ -169,35 +168,6 @@ def convert_data_to_logits(keywords, data):
     return data
 
 
-def get_model_x(input_shape1, input_shape2, output_shape=3):
-    in_tensor_txt = tf.keras.layers.Input(shape=input_shape1)
-    x = tf.keras.layers.Dense(128, activation='sigmoid')(in_tensor_txt)
-    txt_feature = tf.keras.layers.Dense(64, activation='sigmoid')(x)
-
-    in_tensor_img = tf.keras.layers.Input(shape=input_shape2)
-    x = tf.keras.layers.Conv2D(32, (3, 3), activation='relu')(in_tensor_img)
-    x = tf.keras.layers.MaxPooling2D((2, 2))(x)
-    x = tf.keras.layers.Conv2D(64, (3, 3), activation='relu')(x)
-    x = tf.keras.layers.MaxPooling2D((2, 2))(x)
-    x = tf.keras.layers.Flatten()(x)
-    img_feature = tf.keras.layers.Dense(64, activation='sigmoid')(x)
-
-    x = tf.keras.layers.concatenate([txt_feature, img_feature])
-    x = tf.keras.layers.Dense(output_shape, activation='softmax')(x)
-    model = tf.keras.Model(inputs=[in_tensor_txt, in_tensor_img], outputs=x)
-    return model
-
-
-def get_model_txt(input_shape1, output_shape):
-    in_tensor_txt = tf.keras.layers.Input(shape=input_shape1)
-    # x = tf.keras.layers.Conv1D(32, 15, activation='relu',padding="same")(in_tensor_txt)
-    # x = tf.keras.layers.Conv1D(32, 3, activation='relu',padding="same")(x)
-    x = tf.keras.layers.Flatten()(in_tensor_txt)
-    # x = tf.keras.layers.Dense(256, activation='sigmoid')(x)
-    x = tf.keras.layers.Dense(64, activation='relu')(x)
-    x = tf.keras.layers.Dense(output_shape, activation='softmax')(x)
-    model = tf.keras.Model(inputs=in_tensor_txt, outputs=x)
-    return model
 
 
 def convert_data_to_datasets(keywords, data, label_value):
@@ -211,30 +181,52 @@ def convert_data_to_datasets(keywords, data, label_value):
     return logits_data, label
 
 keywords = [
-    [['all'],'销售合同','供货合同','购销合同','承揽合同','销购合同','采购协议','供应合同','定做合同','加工合同'],
-    [['all'],'甲方', '乙方', '买方', '卖方'],
-    [['all'],'发包', '承包', '全称', '承租', '出租', '分包', '建设单位', '施工单位','转让方','受让方','转让人','受让人','出卖','买受','供方','需方','委托人','代建人','委托方','代建方'],
-    [['all'],'编号','地点','时间','签订'],
-    [['all'],'(以下简称', '（以下简称'],
-    [['all'],'第一部分', '第一条', '第一节', '第一章'],
-    [['all'],'一、', '一。', '一．', '一.'],
+    [['all'], '销售合同', '供货合同', '购销合同', '承揽合同', '销购合同', '采购协议', '供应合同', '定做合同',
+     '加工合同','项目合同书', '采购合同', '销售合同', '买卖合同', '工程合同', '施工合同', '合同条款', '分包合同',
+     '安装合同', '服务合同', '维护合同', '承包合同'],
+    [['all'], '甲方', '乙方', '买方', '卖方'],
+    [['all'], '发包', '承包', '全称', '承租', '出租', '分包', '建设单位', '施工单位', '转让方', '受让方', '转让人',
+     '受让人', '出卖', '买受', '供方', '需方', '委托人', '代建人', '委托方', '代建方'],
+    [['all'], '编号', '地点', '时间', '签订'],
+    [['all'], '(以下简称', '（以下简称'],
+    [['all'], '第一部分', '第一条', '第一节', '第一章'],
+    [['all'], '一、', '一。', '一．', '一.'],
     [['all'], '协议'],
-    [['all'], '项目合同书', '采购合同', '销售合同', '买卖合同', '工程合同', '施工合同','合同条款','分包合同','安装合同','服务合同','维护合同','承包合同'],
-    [['all'],'概况', '概述'],
-    [['all'],'(盖章', '(签字', '(公章', '(盖单位章','（盖章', '（签字', '（公章','（盖单位章', '盖章)', '签字)', '公章)','盖单位章)', '盖章）', '签字）', '公章）''盖单位章）','(签名','（签名','签名）','签名)','(印章','（印章','印章）','印章)',],
-    [['all'],'附件','附录','目录','说明'],
-    [['all'],'中华人民共和国'],
-    [['all'],'有限公司'],
-    [['all'],'代理','委托'],
-    [['all'],'法定代表'],
-    [['all'],'补充'],
-    [['all'],'自愿','公平'],
-    [['all'],'有限公司'],
+    [['all'], '概况', '概述'],
+    [['all'], '(盖章', '(签字', '(公章', '(盖单位章', '（盖章', '（签字', '（公章', '（盖单位章', '盖章)', '签字)', '公章)',
+     '盖单位章)', '盖章）', '签字）', '公章）''盖单位章）', '(签名', '（签名', '签名）', '签名)', '(印章', '（印章', '印章）',
+     '印章)', ],
+    [['all'], '附件', '附录', '目录', '说明'],
+    [['all'], '中华人民共和'],
+    [['all'], '有限公司'],
+    [['all'], '代理', '委托'],
+    [['all'], '法定代表'],
+    [['all'], '补充'],
+    [['all'], '自愿', '公平'],
 ]
-if __name__ == '__main__':
-    root = '/home/topnet/图片'
-    folders = ['head2', 'tail', 'other']
 
+def save_variable(data,name):
+
+    # if isinstance(data,dict):
+    if isinstance(data,np.ndarray):
+        np.save(f'contract_front_classify/{name}.npy',data)
+    else:
+        with open(f'contract_front_classify/{name}.pkl','wb') as f:
+            pickle.dump(data,f)
+
+
+
+if __name__ == '__main__':
+    param = Parameter()
+    img_size = param.img_size
+    output_shape = param.output_shape
+    tensorflow_backend = param.tensorflow_backend
+    svm_backend = param.svm_backend
+    faltten = param.faltten
+    use_img = param.use_img
+    show_res = param.show_res
+    root = param.root
+    folders = param.folders
 
     keywords_flatten = []
     for i in keywords:
@@ -253,77 +245,18 @@ if __name__ == '__main__':
             d.insert(0, j)
             key_words_simple.append(d)
 
-    img_size = 320
-    output_shape = 3
-    tensorflow_backend = False
-    svm_backend = True
+    if faltten:
+        keywords = keywords_flatten
     r = r"[|_|.|!|+|-|=|—|,|$|￥|%|^|，|。|？|、|~|@|#|￥|%|…|&|*|《|》|<|>|「|」|{|}|【|】|(|)|/|]|:|：|；|‘|’|“|”|,|（|）"
-    ([head, tail, other], [head_img, tail_img, other_img]) = read_image_txt(root, folders, img_size, use_img=False)
-    head_data, head_label = convert_data_to_datasets(keywords_flatten, head, 1)
-    tail_data, tail_label = convert_data_to_datasets(keywords_flatten, tail, 2)
-    other_data, other_label = convert_data_to_datasets(keywords_flatten, other, 0)
+    ([head, tail, other], [head_img, tail_img, other_img]) = read_image_txt(root, folders, img_size, use_img=use_img)
+    head_data, head_label = convert_data_to_datasets(keywords, head, 1)
+    tail_data, tail_label = convert_data_to_datasets(keywords, tail, 2)
+    other_data, other_label = convert_data_to_datasets(keywords, other, 0)
     text_input = np.concatenate((head_data, tail_data, other_data), axis=0)
     img_input = np.concatenate((head_img, tail_img, other_img), axis=0)
     label = np.concatenate((head_label, tail_label, other_label), axis=0)
     img_name = list(head.keys()) + list(tail.keys()) + list(other.keys())
-    # tran test split
-    acc = []
-    for _ in range(20):
-        seed = random.randint(0, 1000)
-        x1_train, x1_test, x2_train, x2_test, y_train_raw, y_test_raw, img_name_train, img_name_test = train_test_split(text_input, img_input, label,img_name,
-                                                                                         random_state=seed, train_size=0.7)
-        if tensorflow_backend:
-            # tensorflow mix model
-            import tensorflow as tf
-            y_train = tf.one_hot(y_train_raw,output_shape)
-            y_test = tf.one_hot(y_test_raw,output_shape)
-
-            # model = get_model_x(input_shape1=(len(keywords_flatten),),input_shape2=(img_size,img_size,3),output_shape)
-            # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-            # model.fit([x1_train,x2_train], y_train, epochs=100, batch_size=32,validation_data=([x1_test,x2_test],y_test),callbacks=[tf.keras.callbacks.ModelCheckpoint('./contract_models/model.h5',save_best_only=True)])
-
-            model = get_model_txt(input_shape1= (x1_train.shape[1],1)
-                                  ,output_shape=output_shape)
-            model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-            model.summary()
-            model.fit(x1_train[:,:,np.newaxis], y_train, epochs=100, batch_size=32,validation_data=(x1_test[:,:,np.newaxis],y_test),callbacks=[tf.keras.callbacks.ModelCheckpoint('./contract_models/model.h5',save_best_only=True)])
-
-        # 'sigmoid', 'poly', 'precomputed', 'rbf', 'linear'
-        # 'ovr', 'ovo'
-        if svm_backend:
-            clf = svm.SVC(C=0.85, kernel='linear', decision_function_shape='ovr', verbose=False)
-            clf.fit(x1_train, y_train_raw)
-            y_pred = clf.predict(x1_test)
-            y_pred[y_pred == 2] = 0
-            y_test_raw[y_test_raw == 2] = 0
-            y_pred_train = clf.predict(x1_train)
-            y_pred_train[y_pred_train == 2] = 0
-            y_train_raw[y_train_raw == 2] = 0
-
-            # for i in np.where(y_test_raw != y_pred)[0]:
-            #     print(f"'{img_name_test[i]}'")
-            #     img_path = glob.glob(os.path.join(root, '*', img_name_test[i]))[0]
-            #     img = cv2.imread(img_path)
-            #     label = img_path.split('/')[-2]
-                # cv2.imshow(f'{label}', img)
-                # cv2.waitKey(0)
-                # cv2.destroyAllWindows()
-
-            # print('-------------------')
-            # for i in np.where(y_train_raw != y_pred_train)[0]:
-                # print(img_name_train[i])
-                # img_path = glob.glob(os.path.join(root, '*', img_name_train[i]))[0]
-                # img = cv2.imread(img_path)
-                # label = img_path.split('/')[-2]
-                # cv2.imshow(f'{label}', img)
-                # cv2.waitKey(0)
-                # cv2.destroyAllWindows()
-            # print('all test num : ', len(y_test_raw))
-            acc.append(accuracy_score(y_test_raw, y_pred))
-            # print(accuracy_score(y_test_raw, y_pred))
-
-            # print(accuracy_score(y_train_raw, y_pred_train))
-            with open('contract_front_classify/model_loc.pkl', 'wb') as f:
-                pickle.dump(clf, f)
-    print(np.mean(acc))
-
+    save_variable(img_name,name = 'img_name')
+    save_variable(text_input,name ='text_input')
+    save_variable(img_input,name = 'img_input')
+    save_variable(label,name = 'label')
