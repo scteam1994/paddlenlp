@@ -2,8 +2,7 @@ import glob
 import os
 import pickle
 import random
-import tensorflow_models as tfm
-import tensorflow as tf
+
 import cv2
 import numpy as np
 from seqeval.metrics import accuracy_score
@@ -88,6 +87,9 @@ if __name__ == '__main__':
     acc_tf = []
     acc_svm = []
     param = Parameter()
+    if param.tensorflow_backend:
+        import tensorflow_models as tfm
+        import tensorflow as tf
     if param.use_text:
         text_input = np.load('./text_input.npy')
         if param.use_img:

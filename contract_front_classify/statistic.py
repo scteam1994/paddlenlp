@@ -180,30 +180,7 @@ def convert_data_to_datasets(keywords, data, label_value):
     label = np.ones(len(logits_data)) * label_value
     return logits_data, label
 
-keywords = [
-    [['all'], '销售合同', '供货合同', '购销合同', '承揽合同', '销购合同', '采购协议', '供应合同', '定做合同',
-     '加工合同','项目合同书', '采购合同', '销售合同', '买卖合同', '工程合同', '施工合同', '合同条款', '分包合同',
-     '安装合同', '服务合同', '维护合同', '承包合同'],
-    [['all'], '甲方', '乙方', '买方', '卖方'],
-    [['all'], '发包', '承包', '全称', '承租', '出租', '分包', '建设单位', '施工单位', '转让方', '受让方', '转让人',
-     '受让人', '出卖', '买受', '供方', '需方', '委托人', '代建人', '委托方', '代建方'],
-    [['all'], '编号', '地点', '时间', '签订'],
-    [['all'], '(以下简称', '（以下简称'],
-    [['all'], '第一部分', '第一条', '第一节', '第一章'],
-    [['all'], '一、', '一。', '一．', '一.'],
-    [['all'], '协议'],
-    [['all'], '概况', '概述'],
-    [['all'], '(盖章', '(签字', '(公章', '(盖单位章', '（盖章', '（签字', '（公章', '（盖单位章', '盖章)', '签字)', '公章)',
-     '盖单位章)', '盖章）', '签字）', '公章）''盖单位章）', '(签名', '（签名', '签名）', '签名)', '(印章', '（印章', '印章）',
-     '印章)', ],
-    [['all'], '附件', '附录', '目录', '说明'],
-    [['all'], '中华人民共和'],
-    [['all'], '有限公司'],
-    [['all'], '代理', '委托'],
-    [['all'], '法定代表'],
-    [['all'], '补充'],
-    [['all'], '自愿', '公平'],
-]
+
 
 def save_variable(data,name):
 
@@ -229,7 +206,7 @@ if __name__ == '__main__':
     folders = param.folders
 
     keywords_flatten = []
-    for i in keywords:
+    for i in param.keywords:
         word_limit = i[0]
         for j in word_limit:
             for k in i[1:]:
@@ -238,7 +215,7 @@ if __name__ == '__main__':
                 else:
                     print()
     key_words_simple = []
-    for i in keywords:
+    for i in param.keywords:
         word_limit = i[0]
         for j in word_limit:
             d = i[1:]
@@ -246,12 +223,12 @@ if __name__ == '__main__':
             key_words_simple.append(d)
 
     if faltten:
-        keywords = keywords_flatten
+        param.keywords = keywords_flatten
     r = r"[|_|.|!|+|-|=|—|,|$|￥|%|^|，|。|？|、|~|@|#|￥|%|…|&|*|《|》|<|>|「|」|{|}|【|】|(|)|/|]|:|：|；|‘|’|“|”|,|（|）"
     ([head, tail, other], [head_img, tail_img, other_img]) = read_image_txt(root, folders, img_size, use_img=use_img)
-    head_data, head_label = convert_data_to_datasets(keywords, head, 1)
-    tail_data, tail_label = convert_data_to_datasets(keywords, tail, 2)
-    other_data, other_label = convert_data_to_datasets(keywords, other, 0)
+    head_data, head_label = convert_data_to_datasets(param.keywords, head, 1)
+    tail_data, tail_label = convert_data_to_datasets(param.keywords, tail, 2)
+    other_data, other_label = convert_data_to_datasets(param.keywords, other, 0)
     text_input = np.concatenate((head_data, tail_data, other_data), axis=0)
     img_input = np.concatenate((head_img, tail_img, other_img), axis=0)
     label = np.concatenate((head_label, tail_label, other_label), axis=0)
