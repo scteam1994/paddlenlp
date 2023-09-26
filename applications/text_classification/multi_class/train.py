@@ -16,6 +16,7 @@ import functools
 import json
 import os
 import shutil
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -72,7 +73,8 @@ SUPPORTED_MODELS = [
 class DataArguments:
     max_length: int = field(default=128, metadata={"help": "Maximum number of tokens for the model."})
     early_stopping: bool = field(default=False, metadata={"help": "Whether apply early stopping strategy."})
-    early_stopping_patience: int = field(default=4, metadata={"help": "Stop training when the specified metric worsens for early_stopping_patience evaluation calls"})
+    early_stopping_patience: int = field(default=4, metadata={
+        "help": "Stop training when the specified metric worsens for early_stopping_patience evaluation calls"})
     debug: bool = field(default=False, metadata={"help": "Whether choose debug mode."})
     train_path: str = field(default='./data/train.txt', metadata={"help": "Train dataset file path."})
     dev_path: str = field(default='./data/dev.txt', metadata={"help": "Dev dataset file path."})
@@ -83,8 +85,12 @@ class DataArguments:
 
 @dataclass
 class ModelArguments:
-    model_name_or_path: str = field(default="ernie-3.0-tiny-medium-v2-zh", metadata={"help": "Build-in pretrained model name or the path to local model."})
-    export_model_dir: Optional[str] = field(default=None, metadata={"help": "Path to directory to store the exported inference model."})
+    model_name_or_path: str = field(default="ernie-3.0-tiny-medium-v2-zh",
+                                    metadata={"help": "Build-in pretrained model name or the path to local model."})
+    export_model_dir: Optional[str] = field(default=None, metadata={
+        "help": "Path to directory to store the exported inference model."})
+
+
 # yapf: enable
 
 
@@ -227,4 +233,29 @@ def main():
 
 
 if __name__ == "__main__":
+    dataset = 'data_all_2'
+    sys.argv = ['train.py',
+                '--do_train',
+                '--do_eval',
+                '--do_export',
+                '--train_path', f'{dataset}/train.txt',
+                '--dev_path', f'{dataset}/dev.txt',
+                '--test_path', f'{dataset}/dev.txt',
+                '--label_path', f'{dataset}/label.txt',
+                '--model_name_or_path', 'ernie-3.0-tiny-medium-v2-zh',
+                '--output_dir', 'checkpoint',
+                '--device', 'gpu',
+                '--num_train_epochs', '100',
+                '--early_stopping', 'True',
+                '--early_stopping_patience', '5',
+                '--learning_rate', '3e-5',
+                '--max_length', '512',
+                '--per_device_eval_batch_size', '8',
+                '--per_device_train_batch_size', '8',
+                '--metric_for_best_model', 'accuracy',
+                '--logging_steps', '5',
+                '--evaluation_strategy', 'epoch',
+                '--save_strategy', 'epoch',
+                '--load_best_model_at_end',
+                '--save_total_limit', '1']
     main()

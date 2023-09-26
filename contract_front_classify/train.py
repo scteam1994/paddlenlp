@@ -107,7 +107,7 @@ if __name__ == '__main__':
     if param.output_shape == 2:
         label[label == 2] = 0
     img_name = pickle.load(open('./img_name.pkl', 'rb'))
-    for _ in range(20):
+    for _ in range(100):
         seed = random.randint(0, 1000)
         x1_train, x1_test, x2_train, x2_test, y_train_raw, y_test_raw, img_name_train, img_name_test = train_test_split(
             text_input, img_input, label, img_name,

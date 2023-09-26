@@ -343,15 +343,15 @@ class Trainer:
         self._memory_tracker.stop_and_update_metrics()
         all_prompt = []
         self.all_eval_dataset = {}
-        if self.eval_dataset is not None:
-            for d in self.eval_dataset.new_data:
-                key = d["prompt"]
-                test_ds = MapDataset([])
-                for d in self.eval_dataset.new_data:
-                    if d["prompt"] == key:
-                        test_ds.data.append(d)
-                        test_ds.new_data.append(d)
-                self.all_eval_dataset[key] = test_ds.map(self.trains_fn)
+        # if self.eval_dataset is not None:
+        #     for d in self.eval_dataset.new_data:
+        #         key = d["prompt"]
+        #         test_ds = MapDataset([])
+        #         for d in self.eval_dataset.new_data:
+        #             if d["prompt"] == key:
+        #                 test_ds.data.append(d)
+        #                 test_ds.new_data.append(d)
+        #         self.all_eval_dataset[key] = test_ds.map(self.trains_fn)
 
     def add_callback(self, callback):
         """
@@ -921,40 +921,40 @@ class Trainer:
                     )
 
             else:
-                # metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
-                all_p = []
-                all_r = []
-                all_f1 = []
-                metrics = self.evaluate(ignore_keys=ignore_keys_for_eval,
-                                             metric_key_prefix="eval")
-                logger.info(f"-----On step {self.state.global_step}-------")
-                logger.info("-----Evaluate model-------")
-                logger.info("Class Name: ALL CLASSES")
-                logger.info(
-                    "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-                    % (metrics["eval_precision"], metrics["eval_recall"], metrics["eval_f1"])
-                )
+                metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+                # all_p = []
+                # all_r = []
+                # all_f1 = []
+                # metrics = self.evaluate(ignore_keys=ignore_keys_for_eval,
+                #                              metric_key_prefix="eval")
+                # logger.info(f"-----On step {self.state.global_step}-------")
+                # logger.info("-----Evaluate model-------")
+                # logger.info("Class Name: ALL CLASSES")
+                # logger.info(
+                #     "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+                #     % (metrics["eval_precision"], metrics["eval_recall"], metrics["eval_f1"])
+                # )
                 
-                logger.info("-----------------------------")
-                for key in self.all_eval_dataset.keys():
-                    test_ds = self.all_eval_dataset[key]
-                    eval_metrics = self.evaluate(eval_dataset=test_ds,ignore_keys=ignore_keys_for_eval,metric_key_prefix=f"eval_{key}",sub_eval=True)
-                    all_p.append(eval_metrics[f"eval_{key}_precision"])
-                    all_r.append(eval_metrics[f"eval_{key}_recall"])
-                    all_f1.append(eval_metrics[f"eval_{key}_f1"])
-                    logger.info("Class Name: %s" % key)
-                    logger.info("Class Num: %d" % len(test_ds))
-                    logger.info(
-                        "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
-                        % (eval_metrics[f"eval_{key}_precision"], eval_metrics[f"eval_{key}_recall"], eval_metrics[f"eval_{key}_f1"])
-                    )
-                    logger.info("-----------------------------")
-            best_metrics = metrics["eval_f1"]
-        # if self.control.should_save:
-            if best_metrics > self.best_metrics:
-                self.best_metrics = best_metrics
-                self._save_checkpoint(model, metrics=metrics)
-            # self.control = self.callback_handler.on_save(self.args, self.state, self.control)
+        #         logger.info("-----------------------------")
+        #         for key in self.all_eval_dataset.keys():
+        #             test_ds = self.all_eval_dataset[key]
+        #             eval_metrics = self.evaluate(eval_dataset=test_ds,ignore_keys=ignore_keys_for_eval,metric_key_prefix=f"eval_{key}",sub_eval=True)
+        #             all_p.append(eval_metrics[f"eval_{key}_precision"])
+        #             all_r.append(eval_metrics[f"eval_{key}_recall"])
+        #             all_f1.append(eval_metrics[f"eval_{key}_f1"])
+        #             logger.info("Class Name: %s" % key)
+        #             logger.info("Class Num: %d" % len(test_ds))
+        #             logger.info(
+        #                 "Evaluation Precision: %.5f | Recall: %.5f | F1: %.5f"
+        #                 % (eval_metrics[f"eval_{key}_precision"], eval_metrics[f"eval_{key}_recall"], eval_metrics[f"eval_{key}_f1"])
+        #             )
+        #             logger.info("-----------------------------")
+        #     best_metrics = metrics["eval_f1"]
+        if self.control.should_save:
+            # if best_metrics > self.best_metrics:
+            #     self.best_metrics = best_metrics
+            self._save_checkpoint(model, metrics=metrics)
+            self.control = self.callback_handler.on_save(self.args, self.state, self.control)
 
     def _get_learning_rate(self):
         return self.optimizer.get_lr()

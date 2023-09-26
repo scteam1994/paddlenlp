@@ -201,7 +201,7 @@ if __name__ == '__main__':
     dataset_dir = os.path.join(workspace_path, "data_sample")
     record_lines = []
     label_names = list(label_dict.keys())
-    label_names = ['central_unified']
+    # label_names = ['central_unified']
     label_count = [0 for _ in range(len(label_names))]
     image_list = []
     label_list = []

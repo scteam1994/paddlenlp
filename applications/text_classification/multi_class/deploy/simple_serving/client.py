@@ -13,15 +13,29 @@
 # limitations under the License.
 
 import json
+import shutil
 
 import requests
 
-url = "http://0.0.0.0:8189/taskflow/cls"
+url = "http://0.0.0.0:8027/taskflow/cls"
 headers = {"Content-Type": "application/json"}
 
 if __name__ == "__main__":
-    texts = ["黑苦荞茶的功效与作用及食用方法", "交界痣会凸起吗", "检查是否能怀孕挂什么科", "鱼油怎么吃咬破吃还是直接咽下去", "幼儿挑食的生理原因是"]
+    with open("/home/topnet/PycharmProjects/keywords_class/contract_front_classify/all.txt", "r", encoding="utf-8") as f:
+        texts = []
+        label = []
+        for line in f:
+            items = line.strip().split("\t")
+            if items[1] in ["head", "other"]:
+                texts.append(items[0])
+                label.append(items[1])
     data = {"data": {"text": texts}}
     r = requests.post(url=url, headers=headers, data=json.dumps(data))
     result_json = json.loads(r.text)
-    print(result_json["result"])
+    for i in range(len(result_json["result"])):
+        if result_json["result"][i]['predictions'][0]['label'] != label[i]:
+            print('####################')
+            print(f'预测结果：{result_json["result"][i]["predictions"][0]["label"]}------->真实结果：{label[i]}')
+
+
+

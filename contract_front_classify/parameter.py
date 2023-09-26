@@ -4,9 +4,9 @@ class Parameter():
         self.folders = ['head2', 'tail', 'other']
         self.img_size = 320
         self.output_shape = 3
-        self.tensorflow_backend = True
-        self.svm_backend = False
-        self.faltten = True
+        self.tensorflow_backend = False
+        self.svm_backend = True
+        self.flatten = True
         self.use_img = False
         self.use_text = True
         self.show_res = False
@@ -21,6 +21,7 @@ class Parameter():
                 [['all'], '(以下简称', '（以下简称'],
                 [['all'], '第一部分', '第一条', '第一节', '第一章'],
                 [['all'], '一、', '一。', '一．', '一.'],
+                [['all'], '十一', '十一、', '十一。', '十一．', '十一.'],
                 [['all'], '协议'],
                 [['all'], '概况', '概述'],
                 [['all'], '(盖章', '(签字', '(公章', '(盖单位章', '（盖章', '（签字', '（公章', '（盖单位章', '盖章)', '签字)', '公章)',

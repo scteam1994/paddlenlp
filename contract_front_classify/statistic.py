@@ -199,7 +199,7 @@ if __name__ == '__main__':
     output_shape = param.output_shape
     tensorflow_backend = param.tensorflow_backend
     svm_backend = param.svm_backend
-    faltten = param.faltten
+    faltten = param.flatten
     use_img = param.use_img
     show_res = param.show_res
     root = param.root
